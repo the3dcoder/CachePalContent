@@ -8,9 +8,22 @@
   "baseColor": "#E4572E",
   "shinyColor": "#7BE0AD",
   "bodyArchetype": "wisp",
-  "statBias": [2, 4, 1, 0, 2, 0],
+  "statBias": [
+    2,
+    4,
+    1,
+    0,
+    2,
+    0
+  ],
   "hungryFor": "spicy snacks",
-  "needDecayBias": [1.05, 1.15, 0.9, 1.0, 0.95],
+  "needDecayBias": [
+    1.05,
+    1.15,
+    0.9,
+    1.0,
+    0.95
+  ],
   "babyDescription": "A single warm spark that hums when happy and pops when startled.",
   "teenDescription": "Now hot enough to toast a marshmallow, and absolutely willing to do it without asking.",
   "adultDescription": "A proud little flame spirit. Its horns glow brighter the funnier it thinks it's being.",
@@ -31,5 +44,6 @@
     "................",
     "................",
     "................"
-  ]
+  ],
+  "weight": 60
 }

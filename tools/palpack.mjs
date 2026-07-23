@@ -64,6 +64,9 @@ function validateAll() {
     if (!Array.isArray(s.needDecayBias) || s.needDecayBias.length !== 5 || !s.needDecayBias.every(n => typeof n === 'number' && n >= 0.6 && n <= 1.3)) {
       fail(ctx, 'needDecayBias must be 5 numbers in 0.6..1.3');
     }
+    if (s.weight !== undefined && (!Number.isInteger(s.weight) || s.weight < 0 || s.weight > 10000)) {
+      fail(ctx, 'weight must be an integer 0..10000 (spawn odds; 0 = retired from wild rolls)');
+    }
     if (s.feature !== undefined) {
       if (!Array.isArray(s.feature) || s.feature.length !== 16) fail(ctx, 'feature must be 16 rows');
       for (const row of s.feature) {
