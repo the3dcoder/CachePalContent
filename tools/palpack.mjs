@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// palpack — Cache Pal content pipeline (D30/D31/D37).
+// palpack — Cache Pal content pipeline (D30/D31/D37; v2 grids per D51 wave 6).
 //
 //   node tools/palpack.mjs new <key> <id>        scaffold species/<key>.json
 //   node tools/palpack.mjs validate              validate every species/*.json
@@ -14,6 +14,13 @@
 //
 // The registry is APPEND-ONLY: ids are never reused or remapped (the registry
 // is the frozen table — DESIGN_DECISIONS D30). Delisting = "delisted": true.
+//
+// Pack schemas: "cachepal-pack-v1" for archetype-composed species (no custom
+// grids), "cachepal-pack-v2" for species carrying gridBaby/gridTeen/gridAdult.
+// The pairing is enforced BOTH ways: grids ⟺ v2. Grid-less species must stay
+// v1 so game clients that predate v2 parsing (< app 1.6) keep accepting their
+// packs; v2 species are invisible to those clients until they update, which
+// only ever withholds a species they never had. Registry schema is unchanged.
 
 import { createHash, createPrivateKey, sign } from 'crypto';
 import { readFileSync, writeFileSync, readdirSync, existsSync, mkdirSync } from 'fs';
@@ -22,6 +29,9 @@ import { fileURLToPath } from 'url';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const LEGEND = new Set(['.', 'O', 'B', 'S', 'A', 'E', 'W', 'M', 'C', '#']);
+// Custom body grids use the composer ROLE alphabet (SpeciesSubmission.AllowedChars
+// in the game — X = feature role, no '#'). Distinct from the v1 feature LEGEND.
+const GRID_LEGEND = new Set([...'.ABCEMOSWX']);
 const ARCHETYPES = new Set(['blob', 'quad', 'wisp', 'shell', 'fish', 'avian', 'biped', 'jelly', 'serpent']);
 const BUILTIN_MAX_ID = 13; // ids 0-13 are compiled into the app — never here
 
@@ -45,7 +55,9 @@ function validateAll() {
   for (const f of speciesFiles()) {
     const s = JSON.parse(readFileSync(join(ROOT, 'species', f), 'utf8'));
     const ctx = `species/${f}`;
-    if (s.schema !== 'cachepal-pack-v1') fail(ctx, 'schema must be cachepal-pack-v1');
+    if (s.schema !== 'cachepal-pack-v1' && s.schema !== 'cachepal-pack-v2') {
+      fail(ctx, 'schema must be cachepal-pack-v1 or cachepal-pack-v2');
+    }
     if (!Number.isInteger(s.id) || s.id <= BUILTIN_MAX_ID || s.id > 65535) fail(ctx, `id must be ${BUILTIN_MAX_ID + 1}..65535`);
     if (seenIds.has(s.id)) fail(ctx, `duplicate id ${s.id}`); seenIds.add(s.id);
     if (!/^[a-z][a-z0-9-]{2,23}$/.test(s.key)) fail(ctx, 'key must be lowercase slug (3-24 chars)');
@@ -74,6 +86,60 @@ function validateAll() {
         for (const ch of row) if (!LEGEND.has(ch)) fail(ctx, `feature char '${ch}' not in legend`);
       }
     }
+
+    // ---- v2: custom stage grids -------------------------------------------
+    // Mirrors the game's PalSpriteGrids.IsValidCustomGrid (16×16 over the role
+    // alphabet) plus the SpeciesSubmission quality floors. A present-but-invalid
+    // grid makes the game silently degrade the WHOLE species to archetype art —
+    // catching that here is the point of validating before signing.
+    const gridStages = ['gridBaby', 'gridTeen', 'gridAdult'].filter(g => s[g] !== undefined);
+    if (s.schema === 'cachepal-pack-v2' && gridStages.length !== 3) {
+      fail(ctx, 'cachepal-pack-v2 requires all three of gridBaby/gridTeen/gridAdult');
+    }
+    if (s.schema === 'cachepal-pack-v1' && gridStages.length > 0) {
+      fail(ctx, 'custom grids require schema cachepal-pack-v2 (grid-less species stay v1 for old-client compat)');
+    }
+    for (const stage of gridStages) {
+      const grid = s[stage];
+      if (!Array.isArray(grid) || grid.length !== 16) fail(ctx, `${stage} must be 16 rows`);
+      let painted = 0, bodies = 0, outlines = 0;
+      for (const row of grid) {
+        if (typeof row !== 'string' || row.length !== 16) fail(ctx, `${stage} rows must be 16 chars`);
+        for (const ch of row) {
+          if (!GRID_LEGEND.has(ch)) fail(ctx, `${stage} char '${ch}' not in role alphabet .ABCEMOSWX`);
+          if (ch !== '.') painted++;
+          if (ch === 'B') bodies++;
+          if (ch === 'O') outlines++;
+        }
+      }
+      if (painted < 24) fail(ctx, `${stage} looks empty (${painted} painted, need ≥24)`);
+      if (bodies < 8 || outlines < 4) fail(ctx, `${stage} needs a visible body (≥8 B) and outline (≥4 O)`);
+    }
+
+    // ---- v2: provenance (creator credit + living history) ------------------
+    if (s.createdBy !== undefined && (typeof s.createdBy !== 'string' || !s.createdBy.trim())) {
+      fail(ctx, 'createdBy, when present, must be a non-empty string (submitter barn name)');
+    }
+    if (s.history !== undefined) {
+      if (!Array.isArray(s.history) || s.history.length === 0) fail(ctx, 'history, when present, must be a non-empty array');
+      for (const h of s.history) {
+        if (typeof h !== 'object' || h === null) fail(ctx, 'history entries must be objects');
+        if (!/^\d{4}-\d{2}-\d{2}/.test(h.date ?? '')) fail(ctx, 'history entry date must start YYYY-MM-DD');
+        if (typeof h.change !== 'string' || !h.change.trim()) fail(ctx, 'history entry change required');
+        if (typeof h.by !== 'string' || !h.by.trim()) fail(ctx, 'history entry by required');
+      }
+    }
+    if (s.premiereSeed !== undefined) {
+      if (typeof s.premiereSeed !== 'string' || s.premiereSeed.length > 64
+        || [...s.premiereSeed].some(c => c === '|' || c.charCodeAt(0) < 32)) {
+        fail(ctx, 'premiereSeed must be ≤64 chars, no | or control chars');
+      }
+    }
+    if (s.premiereDna !== undefined
+      && !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(s.premiereDna)) {
+      fail(ctx, 'premiereDna must be a GUID');
+    }
+
     all.push({ file: f, species: s });
   }
   if (all.length === 0) fail('species/', 'no species files found');
