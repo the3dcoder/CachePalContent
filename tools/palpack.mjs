@@ -50,7 +50,7 @@ function speciesFiles() {
 function fail(file, msg) { console.error(`INVALID ${file}: ${msg}`); process.exit(1); }
 
 function validateAll() {
-  const seenIds = new Set(), seenKeys = new Set();
+  const seenIds = new Set(), seenKeys = new Set(), seenCosmeticKeys = new Set();
   const all = [];
   for (const f of speciesFiles()) {
     const s = JSON.parse(readFileSync(join(ROOT, 'species', f), 'utf8'));
@@ -138,6 +138,43 @@ function validateAll() {
     if (s.premiereDna !== undefined
       && !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(s.premiereDna)) {
       fail(ctx, 'premiereDna must be a GUID');
+    }
+
+    // ---- v1.7: cosmetics ride v2 species packs (additive field, never a new
+    // schema string — a new string would make pre-1.7 clients drop the pack).
+    // Rules mirror CachePal.Core CosmeticDefinition.TryValidate exactly.
+    if (s.cosmetics !== undefined) {
+      if (s.schema !== 'cachepal-pack-v2') fail(ctx, 'cosmetics require a v2 pack (v1 packs stay untouched for old-client compat)');
+      if (!Array.isArray(s.cosmetics) || s.cosmetics.length === 0) fail(ctx, 'cosmetics, when present, must be a non-empty array');
+      for (const c of s.cosmetics) {
+        const cc = `${ctx} cosmetic '${c?.key ?? '?'}'`;
+        if (!/^[a-z][a-z0-9-]{2,31}$/.test(c.key ?? '')) fail(cc, 'key must be a lowercase slug (3-32, letter first)');
+        if (typeof c.name !== 'string' || c.name.trim().length < 3 || c.name.trim().length > 24) fail(cc, 'name must be 3-24 chars');
+        if (!['aura', 'scarf', 'hat', 'prop'].includes(c.slot)) fail(cc, 'slot must be aura/scarf/hat/prop');
+        if (!['common', 'uncommon', 'rare', 'relic'].includes(c.tier)) fail(cc, 'tier must be common/uncommon/rare/relic');
+        const price = c.price ?? 0, milestone = c.milestoneKey ?? '';
+        if (!Number.isInteger(price) || price < 0 || price > 100000) fail(cc, 'price must be an integer 0..100000');
+        if ((price > 0) === (milestone.length > 0)) fail(cc, 'exactly one acquisition path: price XOR milestoneKey');
+        if (milestone.length > 0 && !/^[a-z][a-z0-9-]{2,47}$/.test(milestone)) fail(cc, 'milestoneKey must be a lowercase slug');
+        const lore = c.lore ?? '';
+        if (lore.length > 200) fail(cc, 'lore must be 200 chars or fewer');
+        if (c.tier === 'relic' && lore.trim().length === 0) fail(cc, 'relic pieces require lore');
+        if (!Array.isArray(c.grid) || c.grid.length !== 16) fail(cc, 'grid must be 16 rows');
+        let painted = 0;
+        for (const row of c.grid) {
+          if (typeof row !== 'string' || row.length !== 16) fail(cc, 'grid rows must be 16 chars');
+          for (const ch of row) {
+            if (ch === '.') continue;
+            painted++;
+            if (ch === '*') continue;
+            if (!/^#[0-9A-Fa-f]{6}$/.test(c.palette?.[ch] ?? '')) fail(cc, `grid char '${ch}' needs a #RRGGBB palette entry`);
+          }
+        }
+        if (painted < 4) fail(cc, 'art looks empty — paint at least 4 cells');
+        if (painted > 200) fail(cc, 'cosmetics decorate, never replace — 200 painted cells max');
+        if (seenCosmeticKeys.has(c.key)) fail(cc, `duplicate cosmetic key '${c.key}' across packs`);
+        seenCosmeticKeys.add(c.key);
+      }
     }
 
     all.push({ file: f, species: s });
