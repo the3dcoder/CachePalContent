@@ -3,7 +3,7 @@
   "id": 14,
   "key": "emberimp",
   "name": "Emberimp",
-  "description": "A flicker of leftover campfire that learned mischief before manners. Warms laps; singes homework.",
+  "description": "A flicker of leftover campfire that learned mischief before manners. Warms laps; sings homework.",
   "credit": "Cache Pal Studio",
   "baseColor": "#E4572E",
   "shinyColor": "#7BE0AD",
@@ -45,5 +45,12 @@
     "................",
     "................"
   ],
-  "weight": 60
+  "weight": 69,
+  "history": [
+    {
+      "date": "2026-07-24",
+      "change": "dex-edit: weight → 69, lore updated (drop 2026-W30)",
+      "by": "operator"
+    }
+  ]
 }
