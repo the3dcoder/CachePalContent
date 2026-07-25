@@ -91,39 +91,11 @@
       "date": "2026-07-25",
       "change": "created (drop 2026-W31)",
       "by": "Cache Pal Studio"
-    }
-  ],
-  "cosmetics": [
+    },
     {
-      "key": "aura-moth-hour",
-      "name": "Moth Hour",
-      "slot": "aura",
-      "tier": "rare",
-      "price": 900,
-      "lore": "They think you're the porch light. Every night, all three of them, absolutely certain.",
-      "grid": [
-        "WbW........WbW..",
-        ".w..........w...",
-        "W...............",
-        ".............W*W",
-        "w.............w.",
-        "................",
-        "W...............",
-        "...............w",
-        "................",
-        "w..............W",
-        "................",
-        "..............W.",
-        "w...............",
-        "...............w",
-        ".W...........w..",
-        ".....w....W....."
-      ],
-      "palette": {
-        "W": "#F0E6CC",
-        "w": "#C4B48A",
-        "b": "#6B5B44"
-      }
+      "date": "2026-07-25",
+      "change": "cosmetics withheld pending the v1.8.1 pack parser",
+      "by": "Cache Pal Studio"
     }
   ]
 }

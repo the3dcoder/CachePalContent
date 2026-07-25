@@ -91,39 +91,11 @@
       "date": "2026-07-25",
       "change": "created (drop 2026-W31)",
       "by": "Cache Pal Studio"
-    }
-  ],
-  "cosmetics": [
+    },
     {
-      "key": "hat-paper-admiral",
-      "name": "Paper Admiral",
-      "slot": "hat",
-      "tier": "uncommon",
-      "price": 350,
-      "lore": "Folded from yesterday's news. Commands a fleet of one.",
-      "grid": [
-        "................",
-        ".....ssssss.....",
-        "...sWiiWWiiWs...",
-        "..sWWWWWWWWWWs..",
-        "..ssssssssssss..",
-        "................",
-        "................",
-        "................",
-        "................",
-        "................",
-        "................",
-        "................",
-        "................",
-        "................",
-        "................",
-        "................"
-      ],
-      "palette": {
-        "W": "#F4EFE2",
-        "s": "#C2B8A2",
-        "i": "#56513F"
-      }
+      "date": "2026-07-25",
+      "change": "cosmetics withheld pending the v1.8.1 pack parser",
+      "by": "Cache Pal Studio"
     }
   ]
 }
