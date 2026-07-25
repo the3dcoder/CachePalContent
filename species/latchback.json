@@ -1,0 +1,129 @@
+{
+  "schema": "cachepal-pack-v2",
+  "id": 18,
+  "key": "latchback",
+  "name": "Latchback",
+  "description": "Forty winters under a hollow log and the hinge still works. Latchback carries a swollen logbook, a pencil worn to a nub, and the unshakable conviction that you came here to sign in. Offer it something small and the lid claps shut, delighted. Ask for that thing back and the latch develops a sudden, principled case of rust.",
+  "credit": "Cache Pal Studio",
+  "createdBy": "Cache Pal Studio",
+  "element": "Alloy",
+  "baseColor": "#7C93A8",
+  "shinyColor": "#D9A537",
+  "bodyArchetype": "shell",
+  "statBias": [
+    2,
+    -1,
+    -2,
+    3,
+    3,
+    2
+  ],
+  "hungryFor": "bottle caps",
+  "needDecayBias": [
+    0.7,
+    0.75,
+    1.3,
+    1.15,
+    0.8
+  ],
+  "babyDescription": "Mostly handle, and already convinced it is important.",
+  "teenDescription": "Slams its own lid for emphasis, then rattles proudly.",
+  "adultDescription": "A walking strongbox that files everything and returns nothing.",
+  "weight": 45,
+  "gridBaby": [
+    "................",
+    "................",
+    "......OOOO......",
+    "......O..O......",
+    ".....OOOOOO.....",
+    "....OSBBBBBO....",
+    "....OXXXXXXO....",
+    "....OSEBBEBO....",
+    "....OSBBBBBO....",
+    "....OSBAABBO....",
+    "....OSBMMBBO....",
+    ".....OOOOOO.....",
+    ".....OO..OO.....",
+    "................",
+    "................",
+    "................"
+  ],
+  "gridTeen": [
+    "................",
+    "......OOOO......",
+    "......O..O......",
+    "....OOOOOOOO....",
+    "...OSSBBBBBBO...",
+    "...OOXXXXXXOO...",
+    "...OSBWBBWBBO...",
+    "...OSBEBBEBBO...",
+    "...OSBBXXBBBO...",
+    "...OSBBAABBBO...",
+    "...OSBBMMBBBO...",
+    "...OSBBBBBBBO...",
+    "...OOOOOOOOOO...",
+    "....OO....OO....",
+    "................",
+    "................"
+  ],
+  "gridAdult": [
+    ".....OOOOOO.....",
+    ".....OS..SO.....",
+    ".....OS..SO.....",
+    "...OOOOOOOOOO...",
+    "..OSSSBBBBBBBO..",
+    "..OSSBBBBBBBBO..",
+    ".OOOXXXAAXXXOOO.",
+    "..OSBWEBBWEBBO..",
+    "..OSBEEBBEEBBO..",
+    "..OSBBBXXBBBBO..",
+    "..OSBCBBBBCBBO..",
+    "..OSBBBMMBBBBO..",
+    "..OXBBBBBBBBXO..",
+    "..OOOOOOOOOOOO..",
+    "..OO........OO..",
+    "................"
+  ],
+  "premiereSeed": "sign the logbook",
+  "premiereDna": "3f5b0022-0012-cd25-4ecd-1c7a8005c4e6",
+  "history": [
+    {
+      "date": "2026-07-25",
+      "change": "created (drop 2026-W31)",
+      "by": "Cache Pal Studio"
+    }
+  ],
+  "cosmetics": [
+    {
+      "key": "hat-paper-admiral",
+      "name": "Paper Admiral",
+      "slot": "hat",
+      "tier": "uncommon",
+      "price": 350,
+      "lore": "Folded from yesterday's news. Commands a fleet of one.",
+      "grid": [
+        "................",
+        ".....ssssss.....",
+        "...sWiiWWiiWs...",
+        "..sWWWWWWWWWWs..",
+        "..ssssssssssss..",
+        "................",
+        "................",
+        "................",
+        "................",
+        "................",
+        "................",
+        "................",
+        "................",
+        "................",
+        "................",
+        "................"
+      ],
+      "palette": {
+        "W": "#F4EFE2",
+        "s": "#C2B8A2",
+        "i": "#56513F"
+      }
+    }
+  ]
+}

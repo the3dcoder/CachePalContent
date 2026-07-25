@@ -24,3 +24,26 @@ _A neon gecko whose tail writes names in the dark._ Founder phrase: "night marke
 Also in this drop: **Emberimp** weight 60 → 69 + lore touch-up (dex-edit,
 first staged-pool publish). Paste any premiere code in the Hatchery seed box
 (content sync fetches this repo automatically).
+
+## Generation 4 — 2026-07-25 · Drop 2026-W31 ("Logbook and Fog")
+
+Two species, and the **first content-delivered cosmetics** ever to ship: pieces
+now ride a v2 species pack as an additive field, exactly as v1.7 designed and
+nobody had yet used.
+
+**Latchback** (species 18, Alloy) — premiere code: `3f5b0022-0012-cd25-4ecd-1c7a8005c4e6`
+_A walking strongbox that files everything and returns nothing._ Premiere seed: "sign the logbook" 🧰
+Carries **Paper Admiral** (hat, uncommon, 350 coins).
+
+**Hushwing** (species 19, Mist) — premiere code: `ebfdbe91-0013-cecb-7058-58378a025dfa`
+_A fog-wader that lifts one wing and the morning goes quiet._ Premiere seed: "quiet as weather" 🌫️
+Carries **Moth Hour** (aura, rare, 900 coins) — the first aura with a shape in it
+rather than a dither, three moths that never lose a cell on any body at any stage.
+
+Paste either premiere code in the Hatchery seed box; content sync fetches this repo
+automatically, and the cosmetics appear in the shop's Style tab once it lands.
+
+Held from this drop, and why, in `drafts/2026-W31/`: **Geodecoil** (art not at the
+bar — the adult read as architecture rather than a serpent) and **Wander Bell**
+(its milestone slot was filled by a compiled piece in game v1.8.0, so it needs
+either a coin price or a new milestone — owner's call).

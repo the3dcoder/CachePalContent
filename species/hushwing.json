@@ -1,0 +1,129 @@
+{
+  "schema": "cachepal-pack-v2",
+  "id": 19,
+  "key": "hushwing",
+  "name": "Hushwing",
+  "description": "Hushwing does not land; it condenses. It wades the low fog on legs you can never quite focus on, standing so still that frogs use it for shade. It turns up before you wake, watches the porch for about as long as a kettle takes, then leaves without a sound - but it always tips one wing on the way out. That is as close as weather gets to saying hello.",
+  "credit": "Cache Pal Studio",
+  "createdBy": "Cache Pal Studio",
+  "element": "Mist",
+  "baseColor": "#8FA8BE",
+  "shinyColor": "#E9A06B",
+  "bodyArchetype": "avian",
+  "statBias": [
+    0,
+    1,
+    3,
+    2,
+    2,
+    -1
+  ],
+  "hungryFor": "mist minnows",
+  "needDecayBias": [
+    0.8,
+    1.1,
+    0.7,
+    0.75,
+    1
+  ],
+  "babyDescription": "A cupful of fog that grew a bill and a staring problem.",
+  "teenDescription": "All neck and patience. Has not blinked since Tuesday.",
+  "adultDescription": "A fog-wader that lifts one wing and the morning goes quiet.",
+  "weight": 48,
+  "gridBaby": [
+    "................",
+    "................",
+    ".......SS.......",
+    "....OOOOO.......",
+    "...OBWEBBO......",
+    ".AAOBBCBBO......",
+    "..OBBBBBBBO.....",
+    "..OBBBBBBBXO....",
+    "..OBBBBBBXXO....",
+    "...OBBBBBBXO....",
+    "....OOSSSOO.....",
+    "......S..S......",
+    "................",
+    "................",
+    "................",
+    "................"
+  ],
+  "gridTeen": [
+    ".........S......",
+    "...OOOOOSS......",
+    "..OBBBBBO.......",
+    "..OBWEBBO.......",
+    ".AABBCBBO.......",
+    "..AOBBBBO..OO...",
+    ".....OBBO.OXXO..",
+    "....OBBBBXXXO...",
+    "..OBBBBBBBBBO...",
+    "..OBBBBBBXXOSS..",
+    "...OBBBBBXOSS...",
+    "....OOSSSOO.....",
+    "......S..S......",
+    "......S..S......",
+    "................",
+    "................"
+  ],
+  "gridAdult": [
+    ".........SS.....",
+    "...OOOOOSS......",
+    "..OBBBBBO.......",
+    "..OBWEBBO.......",
+    "AAABBCBBO.......",
+    "..AOBBBBO...OO..",
+    ".....OBBO..OXXO.",
+    "......OBBO.OXXXO",
+    "....OBBBBXXXXXO.",
+    "..OBBBBBBBBBBO..",
+    "..OBBBBBBXXXOSS.",
+    "...OBBBBBXXOSS..",
+    "....OOSSSSOO....",
+    "......S...S.....",
+    "......S...S.....",
+    "................"
+  ],
+  "premiereSeed": "quiet as weather",
+  "premiereDna": "ebfdbe91-0013-cecb-7058-58378a025dfa",
+  "history": [
+    {
+      "date": "2026-07-25",
+      "change": "created (drop 2026-W31)",
+      "by": "Cache Pal Studio"
+    }
+  ],
+  "cosmetics": [
+    {
+      "key": "aura-moth-hour",
+      "name": "Moth Hour",
+      "slot": "aura",
+      "tier": "rare",
+      "price": 900,
+      "lore": "They think you're the porch light. Every night, all three of them, absolutely certain.",
+      "grid": [
+        "WbW........WbW..",
+        ".w..........w...",
+        "W...............",
+        ".............W*W",
+        "w.............w.",
+        "................",
+        "W...............",
+        "...............w",
+        "................",
+        "w..............W",
+        "................",
+        "..............W.",
+        "w...............",
+        "...............w",
+        ".W...........w..",
+        ".....w....W....."
+      ],
+      "palette": {
+        "W": "#F0E6CC",
+        "w": "#C4B48A",
+        "b": "#6B5B44"
+      }
+    }
+  ]
+}
