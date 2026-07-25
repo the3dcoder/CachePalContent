@@ -1,47 +1,37 @@
-# Wander Bell — HELD from drop 2026-W31
+# Wander Bell — decided, now waiting only on the client floor
 
-Held for one reason, and it is not the art: **its milestone slot was taken before the
-drop went out, by the operator side, and the piece cannot ship as drafted.**
+**Decision, 2026-07-25 (owner):** price it as a **rare, 900 coins**, and rewrite the lore so
+the name describes something the game actually does — the piece is only purchasable on *some*
+weeks. It wanders.
 
-## What happened
+That closes the collision described below. It no longer competes with `scarf-thirty-winters`
+for milestone `elder-1`, and it now has exactly one acquisition path, as the rulebook requires.
 
-This piece was drafted as the content half of a *reserved wardrobe slot*: content packs
-cannot add milestone entries (`MilestoneCatalog` is compiled), so a pack cosmetic can
-only hang off a milestone key the shipped game already knows. The draft proposed
-`elder-1` and the game did not have it yet.
+What it still waits on is **B78**, not a decision: any client older than v1.8.1 drops a
+cosmetic-carrying pack whole, so publishing it early would make its carrying species invisible
+again (`docs/PACK_FORMAT.md`, D57). It ships when v1.8.1 is the floor build in the wild.
 
-`elder-1` then shipped compiled in **v1.8.0** — with a piece of its own,
-`scarf-thirty-winters` — because a milestone entry with no piece behind it is inert and
-BarnCheck's `W7` block asserts that every compiled trophy is winnable. Both scarves now
-point at the same milestone.
+It also waits on the wandering-stock mechanic being live, because otherwise the lore promises
+behaviour the shop does not have — which is the same class of mistake as the `v@AppVersion`
+literal and the "fail-soft" comment that could not fail soft. Text and behaviour ship together
+or neither ships.
 
-## Why not just ship it anyway
+---
 
-- **Two rewards for one achievement, both scarves.** `WardrobeService`'s sweep grants
-  every unowned item whose predicate is true, so earning `elder-1` would hand over both
-  and a Pal can wear one.
-- **The lore and the shipped predicate disagree.** This piece promises "thirty days in
-  your care" and its draft rationale specifies `IsElder && IsAlive`. The compiled
-  predicate is deliberately `IsElder` alone and monotonic — an offline catch-up can cross
-  elderhood and death inside one fast-forward, and the liveness test would let a player
-  earn and lose a trophy in the same silent tick. So the shipped condition is *not* what
-  this text describes, and content is append-only: a signed lore line cannot be recalled.
+## The collision this file originally recorded
 
-## Why the compiled piece is the one that stays
+This piece was drafted as the content half of a *reserved wardrobe slot*: content packs cannot
+add milestone entries (`MilestoneCatalog` is compiled), so a pack cosmetic can only hang off a
+milestone key the shipped game already knows. The draft proposed `elder-1`, and the game did
+not have it yet.
 
-`scarf-thirty-winters` is live. Any keeper who already has a thirty-day-old Pal is
-granted it on their next sweep, and revoking an earned trophy is exactly the failure the
-monotonic predicate exists to prevent. The live one wins by default, not by merit.
+`elder-1` then shipped compiled with a piece of its own, `scarf-thirty-winters`, because a
+milestone entry with no piece behind it is inert and BarnCheck's `W7` block asserts that every
+compiled trophy is winnable. Both scarves pointed at the same milestone, which would have
+granted two at once for a single achievement — and this piece's lore promised "thirty days in
+your care" while the compiled predicate deliberately ignores liveness, so the text would have
+described a condition the code does not enforce, permanently, in an append-only registry.
 
-## The two ways this piece can land, both cheap
-
-1. **Coin-priced rare (900), with one lore line rewritten** so it no longer claims an
-   achievement. The wardrobe genuinely lacks what this piece is — every shipped scarf is
-   a broad woven band and this one reads as jewelry — and the art needs no change:
-   44/44 cells verified across 27 archetype × stage combinations, 42/44 on shell.
-2. **A new compiled milestone in the next game release**, with this piece as its content
-   half and a hint that matches whatever predicate actually ships. That restores the
-   reserved-slot design the draft was written for.
-
-Owner's call, because it decides what a reward *means* rather than how it works. Nothing
-is lost by waiting: the piece keeps, and the drop shipped without it.
+The compiled piece kept the slot because it was already live: any keeper with a thirty-day-old
+Pal is granted it on their next sweep, and revoking an earned trophy is the exact failure the
+monotonic predicate exists to prevent.
