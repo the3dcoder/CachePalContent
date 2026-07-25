@@ -1,0 +1,17 @@
+{
+  "baseColor": "#8FA8BE",
+  "shinyColor": "#E9A06B",
+  "bodyArchetype": "avian",
+  "hungryFor": "mist minnows",
+  "needDecayBias": [
+    0.8,
+    1.1,
+    0.7,
+    0.75,
+    1
+  ],
+  "babyDescription": "A cupful of fog that grew a bill and a staring problem.",
+  "teenDescription": "All neck and patience. Has not blinked since Tuesday.",
+  "adultDescription": "A fog-wader that lifts one wing and the morning goes quiet.",
+  "key": "hushwing"
+}
