@@ -39,7 +39,11 @@ const cmd = process.argv[2];
 if (cmd === 'new') scaffold(process.argv[3], Number(process.argv[4]));
 else if (cmd === 'validate') { validateAll(); console.log('✔ all species valid'); }
 else if (cmd === 'publish') publish();
-else { console.error('Usage: palpack.mjs new <key> <id> | validate | publish'); process.exit(2); }
+else if (cmd === 'delist') delist(process.argv[3], process.argv.slice(4).join(' '));
+else {
+  console.error('Usage: palpack.mjs new <key> <id> | validate | publish | delist <key> "<reason>"');
+  process.exit(2);
+}
 
 function speciesFiles() {
   const dir = join(ROOT, 'species');
@@ -259,4 +263,65 @@ function scaffold(key, id) {
     babyDescription: 'TODO', teenDescription: 'TODO', adultDescription: 'TODO'
   }, null, 2));
   console.log(`scaffolded ${path}`);
+}
+
+/**
+ * Stop offering a species (B62). This is the whole delist mechanism: the flag lives
+ * INSIDE the signed registry payload, so a takedown is a re-sign, and re-signing needs
+ * the operator key. No server can do it, which is why the Barn's admin action files an
+ * intent for this command to execute rather than pretending to act on its own.
+ *
+ * What it does NOT do, and the runbook says the same: recall anything. A player who
+ * already synced the pack keeps their Pal, permanently — the game's boot path registers
+ * from the CACHED registry without filtering delisted entries, and cached packs are never
+ * pruned. Delisting means "stop offering", never "remove".
+ *
+ * The species file stays. `publish` refuses if a registered id vanishes from species/
+ * (append-only, D30), and this is the sanctioned alternative it points at.
+ */
+function delist(key, reason) {
+  if (!key || !reason || reason.trim().length < 8) {
+    console.error('Usage: palpack.mjs delist <key> "<reason>"');
+    console.error('A reason is required and is not optional paperwork: it is what you paste');
+    console.error('into DROPS.md and the moderation log, and what you will want in a year.');
+    process.exit(2);
+  }
+
+  const file = join(ROOT, 'species', `${key}.json`);
+  if (!existsSync(file)) {
+    console.error(`No species/${key}.json — delisting works on the source, which stays put.`);
+    process.exit(1);
+  }
+
+  const species = JSON.parse(readFileSync(file, 'utf8'));
+  if (species.delisted === true) {
+    console.log(`= ${key} (id ${species.id}) is already delisted — nothing to do.`);
+    return;
+  }
+
+  species.delisted = true;
+  // Public history stays NEUTRAL. The species timeline is player-facing; the why of a
+  // takedown may name a complainant or a legal basis and belongs in the private
+  // moderation log, not on a signed page served to everyone.
+  species.history = [
+    ...(Array.isArray(species.history) ? species.history : []),
+    { date: new Date().toISOString().slice(0, 10), change: 'delisted', by: 'operator' }
+  ];
+  writeFileSync(file, `${JSON.stringify(species, null, 2)}\n`);
+
+  console.log(`✔ ${key} (id ${species.id}) marked delisted in species/${key}.json`);
+  console.log('');
+  console.log('It is not live yet. Finish the takedown:');
+  console.log('  node tools/palpack.mjs validate');
+  console.log('  PALPACK_KEY=<PRIVATE> node tools/palpack.mjs publish');
+  console.log(`  git add -A && git commit -m "content: delist ${key}" && git push`);
+  console.log('');
+  console.log('Then record the reason where it is private and durable (the moderation log):');
+  console.log('  az storage entity insert --table-name BarnModerationLog --entity \\');
+  console.log('    PartitionKey=mod RowKey=<inverted-ticks> Action=species-delisted \\');
+  console.log(`    Target=species/${species.id} 'Reason=${reason.replace(/'/g, "''")}' At=<ISO8601Z>`);
+  console.log('');
+  console.log('And say so in DROPS.md, because a species going quiet with no note reads as a bug.');
+  console.log('Reminder: players who already synced it keep their Pal. Delisting stops the');
+  console.log('offering — it does not recall anything, and it cannot.');
 }
