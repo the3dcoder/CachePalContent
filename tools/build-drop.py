@@ -10,7 +10,7 @@ Reads APPROVED rows and turns them into species/*.json sources, ready for
      publish-only fields (colors/archetype/hungryFor/decay/stage lines),
      premiere seed = requestedSeed or "<name> premiere", premiere DNA minted
      via the CachePal FreezeHarness, createdBy + history seeded.
-  2. dex-edit rows → weight/lore/retire applied to their target species files,
+  2. dex-edit rows → weight/lore/retire/delist applied to their target species files,
      folded oldest→newest (latest wins per field; retire pins weight 0 —
      the SAME net state the /admin/dex staged overlay showed), history
      entries appended.
@@ -215,6 +215,14 @@ def main() -> None:
             if body.get("lore") is not None:
                 species["description"] = body["lore"]
                 changed.append("lore updated")
+            if body.get("delist"):
+                # B62: the Barn can only file the INTENT — `delisted` lives inside the
+                # signed registry payload, so this is where it becomes real. Same effect
+                # as `palpack.mjs delist`, which is the fast path for an urgent takedown.
+                # The public history entry stays neutral: the why belongs in the private
+                # moderation log, not on a page served to every player.
+                species["delisted"] = True
+                changed.append("DELISTED (stops reaching new devices; owners keep theirs)")
             species.setdefault("history", []).append(
                 {"date": today, "change": f"dex-edit: {', '.join(changed)} (drop {args.drop_tag})",
                  "by": "operator"})

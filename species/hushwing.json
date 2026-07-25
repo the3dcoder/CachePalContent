@@ -97,5 +97,39 @@
       "change": "cosmetics withheld pending the v1.8.1 pack parser",
       "by": "Cache Pal Studio"
     }
+  ],
+  "cosmetics": [
+    {
+      "key": "aura-moth-hour",
+      "name": "Moth Hour",
+      "slot": "aura",
+      "tier": "rare",
+      "price": 900,
+      "milestoneKey": "",
+      "lore": "They think you're the porch light. Every night, all three of them, absolutely certain.",
+      "grid": [
+        "WbW........WbW..",
+        ".w..........w...",
+        "W...............",
+        ".............W*W",
+        "w.............w.",
+        "................",
+        "W...............",
+        "...............w",
+        "................",
+        "w..............W",
+        "................",
+        "..............W.",
+        "w...............",
+        "...............w",
+        ".W...........w..",
+        ".....w....W....."
+      ],
+      "palette": {
+        "W": "#F0E6CC",
+        "w": "#C4B48A",
+        "b": "#6B5B44"
+      }
+    }
   ]
 }

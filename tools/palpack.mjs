@@ -160,6 +160,10 @@ function validateAll() {
         if (!Number.isInteger(price) || price < 0 || price > 100000) fail(cc, 'price must be an integer 0..100000');
         if ((price > 0) === (milestone.length > 0)) fail(cc, 'exactly one acquisition path: price XOR milestoneKey');
         if (milestone.length > 0 && !/^[a-z][a-z0-9-]{2,47}$/.test(milestone)) fail(cc, 'milestoneKey must be a lowercase slug');
+        // D59: optional and default-false. Type-checked rather than coerced, because a
+        // typo ("wanders": "true") would deserialize to nothing on the client and the
+        // piece would quietly ship as always-in-stock while its lore promised otherwise.
+        if (c.wanders !== undefined && typeof c.wanders !== 'boolean') fail(cc, 'wanders, when present, must be a boolean');
         const lore = c.lore ?? '';
         if (lore.length > 200) fail(cc, 'lore must be 200 chars or fewer');
         if (c.tier === 'relic' && lore.trim().length === 0) fail(cc, 'relic pieces require lore');

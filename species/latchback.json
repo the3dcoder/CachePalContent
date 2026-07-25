@@ -97,5 +97,74 @@
       "change": "cosmetics withheld pending the v1.8.1 pack parser",
       "by": "Cache Pal Studio"
     }
+  ],
+  "cosmetics": [
+    {
+      "key": "hat-paper-admiral",
+      "name": "Paper Admiral",
+      "slot": "hat",
+      "tier": "uncommon",
+      "price": 350,
+      "milestoneKey": "",
+      "lore": "Folded from yesterday's news. Commands a fleet of one.",
+      "grid": [
+        "................",
+        ".....ssssss.....",
+        "...sWiiWWiiWs...",
+        "..sWWWWWWWWWWs..",
+        "..ssssssssssss..",
+        "................",
+        "................",
+        "................",
+        "................",
+        "................",
+        "................",
+        "................",
+        "................",
+        "................",
+        "................",
+        "................"
+      ],
+      "palette": {
+        "W": "#F4EFE2",
+        "s": "#C2B8A2",
+        "i": "#56513F"
+      }
+    },
+    {
+      "key": "scarf-wander-bell",
+      "name": "Wander Bell",
+      "slot": "scarf",
+      "tier": "rare",
+      "price": 900,
+      "milestoneKey": "",
+      "wanders": true,
+      "lore": "Some weeks the stall has one; most weeks the hook is bare. It goes where it likes and comes back when it likes, which the keepers agree is exactly what a bell called Wander ought to do.",
+      "grid": [
+        "................",
+        "................",
+        "................",
+        "................",
+        "................",
+        "................",
+        "................",
+        "................",
+        "..cccccccccccc..",
+        "..dddddddddddd..",
+        "......GGGG......",
+        ".....GlGGGG.....",
+        "....gGGGGGGg....",
+        ".......gg.......",
+        "................",
+        "................"
+      ],
+      "palette": {
+        "c": "#8A6A44",
+        "d": "#5C4530",
+        "G": "#D9B34A",
+        "g": "#9A7526",
+        "l": "#F5E4A0"
+      }
+    }
   ]
 }
