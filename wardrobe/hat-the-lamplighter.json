@@ -1,0 +1,35 @@
+{
+  "key": "hat-the-lamplighter",
+  "name": "The Lamplighter",
+  "slot": "hat",
+  "tier": "relic",
+  "price": 2600,
+  "milestoneKey": "",
+  "wanders": false,
+  "lore": "They walked the whole street at dusk so nobody would come home to a dark house. No one ever thanked them. They went out again the next night.",
+  "grid": [
+    "................",
+    "........*.......",
+    ".......AfA......",
+    ".....bccGGccb...",
+    "....bbbbbbbbbb..",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................"
+  ],
+  "palette": {
+    "A": "#C97A2B",
+    "f": "#F6C558",
+    "b": "#22242C",
+    "c": "#3E4453",
+    "G": "#D4AF37"
+  }
+}

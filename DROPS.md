@@ -98,3 +98,24 @@ is worse than repricing. The name then earned a mechanic instead of losing one.
 Signed only after the *signed pack bytes* were read back through the shipped
 `PackCosmetics` reader — every piece parsing, both rares still Rare, the wandering flag
 surviving the wire — which is the check generation 4 did not have.
+
+## Generation 7 — 2026-07-25 · The first piece on the wardrobe channel
+
+No species changes. One cosmetic, and it is the first ever delivered by
+`cachepal-cosmetics-v1` — the file cosmetics now have to themselves (D61), rather than
+riding inside a creature's pack.
+
+**The Lamplighter** — hat, relic, 2600 coins.
+_They walked the whole street at dusk so nobody would come home to a dark house. No one
+ever thanked them. They went out again the next night._
+
+Hat/Relic was one of only two empty cells in the shop's whole ladder, so this fills a real
+hole rather than crowding a full shelf. Requires game **v1.10.0** — older clients skip the
+registry's `wardrobe` reference as an unknown field and simply see a shop without it.
+
+Two things about the art are firsts. Its single glint is the one `*` the shipped relics all
+carry, so it belongs to the same family as The Long Thread and Signal Lantern. And it is the
+only hat in the game that never clips: every painted cell is inside rows 1–4 and columns
+4–13, which is the box that survives all nine hat anchors including shell's (−4, +5) — the
+offset that shaves a corner off every other hat. Verified against all 27 archetype × stage
+combinations, 22 of 22 cells landing on every one.
