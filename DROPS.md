@@ -119,3 +119,43 @@ only hat in the game that never clips: every painted cell is inside rows 1–4 a
 4–13, which is the box that survives all nine hat anchors including shell's (−4, +5) — the
 offset that shaves a corner off every other hat. Verified against all 27 archetype × stage
 combinations, 22 of 22 cells landing on every one.
+
+## Generation 8 — 2026-07-27 · The first scene on the backgrounds channel
+
+No species changes, no cosmetics. One Playground background, and it is the first ever
+delivered by `cachepal-backgrounds-v1` — the channel scenes now have to themselves (B90),
+built on the same isolation lesson the wardrobe file was (D61): its parse path cannot reach
+the species registry, so a bad scene can never cost a creature.
+
+**Lantern Thicket** — Playground background, 900 coins.
+_Paper lanterns against the dusk. The fireflies came to see._
+
+Requires game **v1.33.0**. Older clients skip the registry's `backgrounds` reference as an
+unknown field and simply see the three compiled scenes, exactly as before.
+
+**The art travels inside the signed file.** A background needs pixels, and the obvious
+shape — a URL to this host — was refused: it would add a second fetch path with its own
+failure modes, put an unverified remote URL inside a CSS `url()`, and break offline, because
+the client caches files rather than downloads. Carrying the PNG as base64 inside the
+SHA-256-pinned file means the pixels inherit the registry's Ed25519 chain for free, render
+from cache with no network at all, and cannot be swapped by anyone without this key.
+
+**Why this drop waited for a reload rather than a deploy.** The client returns early from a
+content sync when the generation is not newer — and that check sits ABOVE the channel
+fetches. So a device that had synced generation 8 while still running v1.32.0 would never
+have fetched this file at all: not on update, not ever, until generation 9. Nothing would
+have errored; the scene simply would not exist. So v1.33.0 went live first, and this was
+signed only after the household confirmed it had actually reloaded — the same shape as the
+generation 6 wait, for a sharper reason.
+
+`palpack publish` learned the channel in this drop, rather than the reference being pasted
+in by hand — a hand-added ref would have been silently dropped by the next publish, which
+rebuilds the payload from the repo. `backgrounds/CURRENT` names the live file in one line,
+and background keys are now **append-only** for the blunt reason cosmetic keys are: a scene
+that vanishes stops resolving, and its owner's Playground heals back to the Meadow. The bag
+row survives, so a republished scene returns to whoever bought it — but the thing they paid
+for stops appearing, which is the same broken promise a vanished hat would be.
+
+Signed only after the **signed file bytes** were read back through the shipped
+`BackgroundFile` reader — one scene, price 900, band and rest spots intact, art arriving as
+a data URI — which is the check generation 4 did not have.

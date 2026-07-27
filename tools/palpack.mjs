@@ -290,6 +290,7 @@ function publish() {
 
   let generation = 1;
   let priorWardrobeKeys = [];
+  let priorBackgroundKeys = [];
   const prior = join(ROOT, 'registry.pub.json');
   if (existsSync(prior)) {
     const prev = JSON.parse(Buffer.from(JSON.parse(readFileSync(prior, 'utf8')).payload, 'base64url').toString('utf8'));
@@ -304,6 +305,12 @@ function publish() {
     // piece that disappears from the file stops resolving for the people who BOUGHT it,
     // so their Pal loses a hat it is wearing. Withdraw instead — the piece stays in the
     // file, stops being sold, and keeps rendering for its owners.
+    if (prev.backgrounds?.file) {
+      const priorBg = join(ROOT, prev.backgrounds.file);
+      if (existsSync(priorBg)) {
+        priorBackgroundKeys = (JSON.parse(readFileSync(priorBg, 'utf8')).backgrounds ?? []).map(b => b.key);
+      }
+    }
     if (prev.wardrobe?.file) {
       const priorPath = join(ROOT, prev.wardrobe.file);
       if (existsSync(priorPath)) {
@@ -345,6 +352,43 @@ function publish() {
     wardrobeRef = { file: `cosmetics/${name}`, sha256 };
   }
 
+  // The backgrounds channel (B90, `cachepal-backgrounds-v1`). Unlike the wardrobe file,
+  // this one is NOT assembled here: the scene art is painted upstream in the CachePal
+  // repo (`tools/background-file.mjs`, which inlines the PNG as base64 and validates
+  // against the shipped C# rulebook's own limits), so the content repo stores the emitted
+  // artifact VERBATIM and references it. Verbatim matters: the client checks the file's
+  // SHA-256 against this payload, so re-canonicalising the bytes here would break the
+  // very chain the reference exists to provide.
+  //
+  // `backgrounds/CURRENT` names the live file — one line, so a human can see at a glance
+  // which artifact this generation ships, and a withdrawal is a one-line edit rather than
+  // an archaeology exercise.
+  let backgroundsRef;
+  const bgCurrent = join(ROOT, 'backgrounds', 'CURRENT');
+  if (existsSync(bgCurrent)) {
+    const name = readFileSync(bgCurrent, 'utf8').trim();
+    if (!name) { console.error('backgrounds/CURRENT is empty — name the live file or delete the pointer.'); process.exit(1); }
+    const bgPath = join(ROOT, 'backgrounds', name);
+    if (!existsSync(bgPath)) { console.error(`backgrounds/CURRENT names ${name}, which does not exist.`); process.exit(1); }
+    const bgBytes = readFileSync(bgPath);
+    const parsed = JSON.parse(bgBytes.toString('utf8'));
+    if (parsed.schema !== 'cachepal-backgrounds-v1' || !Array.isArray(parsed.backgrounds) || parsed.backgrounds.length === 0) {
+      console.error(`backgrounds/${name} is not a non-empty cachepal-backgrounds-v1 file.`);
+      process.exit(1);
+    }
+    // Append-only, and for the blunter reason again: a scene that disappears from the file
+    // stops RESOLVING, so its owner's Playground silently heals back to the Meadow. The bag
+    // row survives (it returns if the scene is ever republished), but the thing they bought
+    // stops appearing, which is the same broken promise a vanished hat would be.
+    for (const k of priorBackgroundKeys) {
+      if (!parsed.backgrounds.some(b => b.key === k)) {
+        console.error(`APPEND-ONLY VIOLATION: background '${k}' vanished from backgrounds/${name}. An owner's scene would stop resolving.`);
+        process.exit(1);
+      }
+    }
+    backgroundsRef = { file: `backgrounds/${name}`, sha256: createHash('sha256').update(bgBytes).digest('hex') };
+  }
+
   const payloadObj = {
     schema: 'cachepal-registry-v1',
     generation,
@@ -353,7 +397,8 @@ function publish() {
     // Additive, and omitted entirely when there is no wardrobe file — an absent field
     // and a null one read the same to the client, but omitting it keeps the payload
     // honest about what this generation actually ships.
-    ...(wardrobeRef ? { wardrobe: wardrobeRef } : {})
+    ...(wardrobeRef ? { wardrobe: wardrobeRef } : {}),
+    ...(backgroundsRef ? { backgrounds: backgroundsRef } : {})
   };
   const payloadBytes = Buffer.from(canonical(payloadObj), 'utf8');
   const signature = sign(null, payloadBytes, privateKey);
@@ -366,7 +411,8 @@ function publish() {
   const wardrobeNote = wardrobeRef
     ? `, wardrobe ${wardrobe.length} piece(s)${withdrawn > 0 ? ` (${withdrawn} withdrawn)` : ''}`
     : '';
-  console.log(`✔ published generation ${generation}: ${entries.length} species${wardrobeNote}, signed.`);
+  const bgNote = backgroundsRef ? `, backgrounds ${JSON.parse(readFileSync(join(ROOT, backgroundsRef.file), 'utf8')).backgrounds.length} scene(s)` : '';
+  console.log(`✔ published generation ${generation}: ${entries.length} species${wardrobeNote}${bgNote}, signed.`);
 }
 
 function scaffold(key, id) {
