@@ -1,5 +1,47 @@
 # Content drops
 
+## Generation 9 — 2026-07-29 · Drop 2026-W31 ("Two Small Comforts")
+
+A wardrobe-only drop, and the first publish under B205's guards.
+
+**Enamel Mug** (`hat-enamel-mug`, hat, common, 🪙120)
+_Navy rim, one chip, and more tea through it than most cupboards see in a
+lifetime. Retired to a warmer job._ ☕
+
+**Yarn End** (`scarf-yarn-end`, scarf, common, 🪙120)
+_Too short for the row it was meant for. Too good to throw out._ 🧶
+
+Both were authored and gated in the app repo by `W68-DROP`, which assembles
+them into the canonical bytes `publish` emits and reads them back through the
+shipped `WardrobeFile.Read`, **counted** — both channel readers are fail-soft
+by design, so a rejected piece is silent, and "it did not throw" is the
+posture that cost generation 4 two species. Hat and scarf rather than props on
+purpose: the shop's tier-heading branches exclude props and the priced ladder
+stops at Rare, so a coin relic prop would render as a bare tile with no
+heading and a dead tap target. Filling that cell is an app release, not a drop.
+
+**What the guards reported, and why the third line is the point:**
+
+```
+freshness:   baseline generation 8 byte-identical to the live registry
+append-only: backgrounds 1 → 1 entry, none removed
+append-only: wardrobe   1 → 3 entries, none removed
+append-only: 6 species and 2 channels compared against generation 8
+```
+
+Wave 40 came one command short of publishing from a generation-7 clone whose
+`palpack.mjs` contained zero references to backgrounds. That would have
+re-issued an already-signed generation **and silently unpublished Lantern
+Thicket** — a 900-coin background — for everyone who had bought it, with no
+error anywhere. The channel guard now derives its set from the previous
+payload's own keys rather than a named list of two, and the freshness gate
+refuses any clone that is not byte-identical to live.
+
+Verified live after publish: registry reports generation 9, the cosmetics file
+carries all three pieces (both new ones and The Lamplighter), and the
+backgrounds channel still answers 200.
+
+
 ## Generation 1 — 2026-07-23
 
 **Emberimp** (species 14) — premiere code: `e1f20c80-000e-c5e0-5f54-29a6afd8f631`
