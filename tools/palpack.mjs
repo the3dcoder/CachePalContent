@@ -11,6 +11,11 @@
 // publish needs the signing key: set PALPACK_KEY to the PRIVATE value from the
 // key file Earl holds (base64url, 32 bytes). NEVER commit that value.
 //
+// publish env, all optional, all deliberate rather than convenient (B205):
+//   PALPACK_ALLOW_GENESIS=1   there is genuinely no previous registry (first publish ever)
+//   PALPACK_SKIP_FRESHNESS=1  publish without confirming the clone against the live channel
+//   PALPACK_REGISTRY_URL      where the live registry lives (default: the compiled URL below)
+//
 // Output layout (served verbatim by GitHub Pages):
 //   packs/pack-<id>-<key>.<hash8>.json   content-hashed, immutable
 //   cosmetics/cosmetics-<hash8>.json     content-hashed, immutable (D61)
@@ -32,6 +37,25 @@
 // wardrobe/ stops resolving for whoever BOUGHT it, so their Pal loses a hat it is
 // wearing. Withdraw instead — it stays in the file and stops being sold.
 //
+// APPEND-ONLY IS PER CHANNEL, AND THE CHANNEL SET IS DERIVED (B205). `publish`
+// re-signs the WHOLE registry every run, so any channel this run fails to emit is
+// UNPUBLISHED for everyone who owns something in it. The guard therefore reads the
+// channel set out of the PREVIOUS PAYLOAD'S OWN KEYS — every key holding a
+// {file, sha256} ref is a channel — rather than checking a named list. A named list
+// of two is exactly how the backgrounds channel went unguarded from the day it
+// shipped, and it is how the fourth channel would go unguarded too. A channel
+// present in generation N and absent in N+1 is a DELETION and is refused; so is an
+// entry inside one. Growth is fine: a channel that has never existed may appear.
+//
+// A guard is only as good as its baseline, and the baseline is this clone (B205's
+// actual incident: a clone at generation 7 while the channel served 8, whose palpack
+// predated backgrounds entirely — its append-only guard had nothing to compare
+// because ITS previous payload had no backgrounds key either). So `publish` also
+// refuses unless this clone's registry.pub.json is byte-for-byte what the live
+// channel is serving right now. The two halves are not redundant: the append-only
+// guard cannot see a deletion that is invisible in a stale baseline, and freshness
+// alone would not stop a deletion made deliberately on a current one.
+//
 // Pack schemas: "cachepal-pack-v1" for archetype-composed species (no custom
 // grids), "cachepal-pack-v2" for species carrying gridBaby/gridTeen/gridAdult.
 // The pairing is enforced BOTH ways: grids ⟺ v2. Grid-less species must stay
@@ -51,6 +75,9 @@ const LEGEND = new Set(['.', 'O', 'B', 'S', 'A', 'E', 'W', 'M', 'C', '#']);
 const GRID_LEGEND = new Set([...'.ABCEMOSWX']);
 const ARCHETYPES = new Set(['blob', 'quad', 'wisp', 'shell', 'fish', 'avian', 'biped', 'jelly', 'serpent']);
 const BUILTIN_MAX_ID = 13; // ids 0-13 are compiled into the app — never here
+// The live channel, same casing as the client's compiled ContentSyncService.DefaultBaseUrl
+// (GitHub Pages project paths are case-sensitive; this casing is the verified-working one).
+const LIVE_BASE = 'https://the3dcoder.github.io/CachePalContent';
 
 const cmd = process.argv[2];
 if (cmd === 'new') scaffold(process.argv[3], Number(process.argv[4]));
@@ -58,7 +85,7 @@ else if (cmd === 'validate') {
   const { species, wardrobe } = validateAll();
   console.log(`✔ all valid — ${species.length} species, ${wardrobe.length} wardrobe piece(s)`);
 }
-else if (cmd === 'publish') publish();
+else if (cmd === 'publish') await publish(); // async: the freshness gate reads the live channel
 else if (cmd === 'delist') delist(process.argv[3], process.argv.slice(4).join(' '));
 else if (cmd === 'wardrobe-new') wardrobeScaffold(process.argv[3]);
 else if (cmd === 'withdraw') withdraw(process.argv[3], process.argv.slice(4).join(' '));
@@ -276,7 +303,7 @@ function canonical(obj) {
   return JSON.stringify(obj);
 }
 
-function publish() {
+async function publish() {
   const key = process.env.PALPACK_KEY;
   if (!key) { console.error('Set PALPACK_KEY to the PRIVATE signing value (base64url).'); process.exit(2); }
   const privDer = Buffer.concat([
@@ -286,70 +313,49 @@ function publish() {
   const privateKey = createPrivateKey({ key: privDer, format: 'der', type: 'pkcs8' });
 
   const { species: all, wardrobe } = validateAll();
-  mkdirSync(join(ROOT, 'packs'), { recursive: true });
 
-  let generation = 1;
-  let priorWardrobeKeys = [];
-  let priorBackgroundKeys = [];
-  const prior = join(ROOT, 'registry.pub.json');
-  if (existsSync(prior)) {
-    const prev = JSON.parse(Buffer.from(JSON.parse(readFileSync(prior, 'utf8')).payload, 'base64url').toString('utf8'));
-    generation = prev.generation + 1;
-    for (const p of prev.species) {
-      if (!all.some(a => a.species.id === p.id)) {
-        console.error(`APPEND-ONLY VIOLATION: id ${p.id} (${p.key}) vanished from species/. Delist it instead.`);
-        process.exit(1);
-      }
-    }
-    // The wardrobe is append-only too (D61), and for a blunter reason than species: a
-    // piece that disappears from the file stops resolving for the people who BOUGHT it,
-    // so their Pal loses a hat it is wearing. Withdraw instead — the piece stays in the
-    // file, stops being sold, and keeps rendering for its owners.
-    if (prev.backgrounds?.file) {
-      const priorBg = join(ROOT, prev.backgrounds.file);
-      if (existsSync(priorBg)) {
-        priorBackgroundKeys = (JSON.parse(readFileSync(priorBg, 'utf8')).backgrounds ?? []).map(b => b.key);
-      }
-    }
-    if (prev.wardrobe?.file) {
-      const priorPath = join(ROOT, prev.wardrobe.file);
-      if (existsSync(priorPath)) {
-        priorWardrobeKeys = (JSON.parse(readFileSync(priorPath, 'utf8')).cosmetics ?? []).map(c => c.key);
-        for (const k of priorWardrobeKeys) {
-          if (!wardrobe.some(c => c.key === k)) {
-            console.error(`APPEND-ONLY VIOLATION: cosmetic '${k}' vanished from wardrobe/.`);
-            console.error(`Owners would lose a piece they are wearing. Withdraw it instead:`);
-            console.error(`  node tools/palpack.mjs withdraw ${k} "<reason>"`);
-            process.exit(1);
-          }
-        }
-      }
-    }
-  }
+  // Gate 1 (B205): what are we appending TO? Both halves refuse rather than warn.
+  const prev = readBaseline();
+  await assertCloneIsCurrent(prev);
+  const generation = prev ? prev.generation + 1 : 1;
 
+  // Assemble everything this generation would ship — packs, channel files, the payload —
+  // WITHOUT writing a byte. The append-only guard then compares the previous payload against
+  // the payload that is actually about to be signed, rather than against a proxy for it, and
+  // a refusal leaves the working tree exactly as it found it.
   const entries = [];
-  for (const { species: s } of all.sort((a, b) => a.species.id - b.species.id).map(x => x)) {
+  const packWrites = [];
+  for (const { species: s } of all.slice().sort((a, b) => a.species.id - b.species.id)) {
     const packBytes = Buffer.from(canonical(s), 'utf8');
     const sha256 = createHash('sha256').update(packBytes).digest('hex');
     const packName = `pack-${s.id}-${s.key}.${sha256.slice(0, 8)}.json`;
-    writeFileSync(join(ROOT, 'packs', packName), packBytes);
+    packWrites.push({ path: join(ROOT, 'packs', packName), bytes: packBytes });
     entries.push({
       id: s.id, key: s.key, name: s.name, credit: s.credit,
       pack: `packs/${packName}`, sha256, delisted: s.delisted === true
     });
   }
 
+  // Every signed FILE channel this generation ships, as a descriptor: the payload ref, the
+  // file's parsed content (so the guard derives entries the same way on both sides of the
+  // comparison), and the bytes to write if there are any. Building a channel is necessarily
+  // per-channel work — you cannot derive how to assemble a backgrounds file from a key name.
+  // GUARDING one is not: see assertAppendOnly, which never learns these names.
+  const channels = [];
+
   // The standalone wardrobe file (D61): content-hashed and immutable exactly like a
   // pack, and referenced from the signed payload so it inherits the registry's Ed25519
   // trust chain without a second signature to manage.
-  let wardrobeRef;
   if (wardrobe.length > 0) {
-    mkdirSync(join(ROOT, 'cosmetics'), { recursive: true });
-    const fileBytes = Buffer.from(canonical({ schema: 'cachepal-cosmetics-v1', cosmetics: wardrobe }), 'utf8');
+    const content = { schema: 'cachepal-cosmetics-v1', cosmetics: wardrobe };
+    const fileBytes = Buffer.from(canonical(content), 'utf8');
     const sha256 = createHash('sha256').update(fileBytes).digest('hex');
     const name = `cosmetics-${sha256.slice(0, 8)}.json`;
-    writeFileSync(join(ROOT, 'cosmetics', name), fileBytes);
-    wardrobeRef = { file: `cosmetics/${name}`, sha256 };
+    channels.push({
+      name: 'wardrobe', content, bytes: fileBytes,
+      dir: join(ROOT, 'cosmetics'), path: join(ROOT, 'cosmetics', name),
+      ref: { file: `cosmetics/${name}`, sha256 }
+    });
   }
 
   // The backgrounds channel (B90, `cachepal-backgrounds-v1`). Unlike the wardrobe file,
@@ -363,7 +369,6 @@ function publish() {
   // `backgrounds/CURRENT` names the live file — one line, so a human can see at a glance
   // which artifact this generation ships, and a withdrawal is a one-line edit rather than
   // an archaeology exercise.
-  let backgroundsRef;
   const bgCurrent = join(ROOT, 'backgrounds', 'CURRENT');
   if (existsSync(bgCurrent)) {
     const name = readFileSync(bgCurrent, 'utf8').trim();
@@ -371,35 +376,40 @@ function publish() {
     const bgPath = join(ROOT, 'backgrounds', name);
     if (!existsSync(bgPath)) { console.error(`backgrounds/CURRENT names ${name}, which does not exist.`); process.exit(1); }
     const bgBytes = readFileSync(bgPath);
-    const parsed = JSON.parse(bgBytes.toString('utf8'));
-    if (parsed.schema !== 'cachepal-backgrounds-v1' || !Array.isArray(parsed.backgrounds) || parsed.backgrounds.length === 0) {
+    const content = JSON.parse(bgBytes.toString('utf8'));
+    if (content.schema !== 'cachepal-backgrounds-v1' || !Array.isArray(content.backgrounds) || content.backgrounds.length === 0) {
       console.error(`backgrounds/${name} is not a non-empty cachepal-backgrounds-v1 file.`);
       process.exit(1);
     }
-    // Append-only, and for the blunter reason again: a scene that disappears from the file
-    // stops RESOLVING, so its owner's Playground silently heals back to the Meadow. The bag
-    // row survives (it returns if the scene is ever republished), but the thing they bought
-    // stops appearing, which is the same broken promise a vanished hat would be.
-    for (const k of priorBackgroundKeys) {
-      if (!parsed.backgrounds.some(b => b.key === k)) {
-        console.error(`APPEND-ONLY VIOLATION: background '${k}' vanished from backgrounds/${name}. An owner's scene would stop resolving.`);
-        process.exit(1);
-      }
-    }
-    backgroundsRef = { file: `backgrounds/${name}`, sha256: createHash('sha256').update(bgBytes).digest('hex') };
+    channels.push({
+      name: 'backgrounds', content, bytes: null, path: bgPath,
+      ref: { file: `backgrounds/${name}`, sha256: createHash('sha256').update(bgBytes).digest('hex') }
+    });
   }
 
   const payloadObj = {
     schema: 'cachepal-registry-v1',
     generation,
     publishedAt: new Date().toISOString(),
-    species: entries,
-    // Additive, and omitted entirely when there is no wardrobe file — an absent field
-    // and a null one read the same to the client, but omitting it keeps the payload
-    // honest about what this generation actually ships.
-    ...(wardrobeRef ? { wardrobe: wardrobeRef } : {}),
-    ...(backgroundsRef ? { backgrounds: backgroundsRef } : {})
+    species: entries
   };
+  // Channel refs are additive, and omitted entirely when the channel ships nothing — an
+  // absent field and a null one read the same to the client, but omitting it keeps the
+  // payload honest about what this generation actually ships. `canonical` sorts keys, so
+  // the signed bytes do not depend on the order they are attached in.
+  for (const c of channels) payloadObj[c.name] = c.ref;
+
+  // Gate 2 (B205): nothing that generation N published may be missing from N+1.
+  assertAppendOnly(prev, payloadObj, all, channels);
+
+  mkdirSync(join(ROOT, 'packs'), { recursive: true });
+  for (const w of packWrites) writeFileSync(w.path, w.bytes);
+  for (const c of channels) {
+    if (!c.bytes) continue; // stored verbatim upstream — nothing to write
+    mkdirSync(c.dir, { recursive: true });
+    writeFileSync(c.path, c.bytes);
+  }
+
   const payloadBytes = Buffer.from(canonical(payloadObj), 'utf8');
   const signature = sign(null, payloadBytes, privateKey);
   writeFileSync(join(ROOT, 'registry.pub.json'), JSON.stringify({
@@ -408,11 +418,281 @@ function publish() {
   }, null, 2));
 
   const withdrawn = wardrobe.filter(c => c.delisted === true).length;
-  const wardrobeNote = wardrobeRef
-    ? `, wardrobe ${wardrobe.length} piece(s)${withdrawn > 0 ? ` (${withdrawn} withdrawn)` : ''}`
-    : '';
-  const bgNote = backgroundsRef ? `, backgrounds ${JSON.parse(readFileSync(join(ROOT, backgroundsRef.file), 'utf8')).backgrounds.length} scene(s)` : '';
-  console.log(`✔ published generation ${generation}: ${entries.length} species${wardrobeNote}${bgNote}, signed.`);
+  const notes = channels.map(c => {
+    const n = channelEntries(c.content, c.ref.file).keys.length;
+    if (c.name === 'wardrobe') return `, wardrobe ${n} piece(s)${withdrawn > 0 ? ` (${withdrawn} withdrawn)` : ''}`;
+    return `, ${c.name} ${n} entr${n === 1 ? 'y' : 'ies'}`;
+  }).join('');
+  console.log(`✔ published generation ${generation}: ${entries.length} species${notes}, signed.`);
+}
+
+/**
+ * The previous signed payload — the thing append-only is measured against (B205).
+ *
+ * Refuses a baseline it cannot read INSTEAD of treating it as "nothing was published before,
+ * therefore nothing can have been deleted". That inference is the vacuity that would make
+ * every check below decorative: an empty, truncated or half-written registry.pub.json would
+ * sail through a guard that only compares what it managed to load. A genuine first publish is
+ * a real thing, so it gets a door — but a deliberate, named one you cannot walk through by
+ * accident.
+ */
+function readBaseline() {
+  const prior = join(ROOT, 'registry.pub.json');
+  if (!existsSync(prior)) {
+    if (process.env.PALPACK_ALLOW_GENESIS === '1') {
+      console.log('  baseline: none, and PALPACK_ALLOW_GENESIS=1 says that is intended — publishing generation 1.');
+      return null;
+    }
+    console.error('NO BASELINE: registry.pub.json is missing from this clone.');
+    console.error('Publishing would sign generation 1 over a channel that is already serving a');
+    console.error('later one, and no append-only check could run at all. Restore the clone.');
+    console.error('If this really is the first publish ever: PALPACK_ALLOW_GENESIS=1');
+    process.exit(1);
+  }
+  let prev;
+  try {
+    prev = JSON.parse(Buffer.from(JSON.parse(readFileSync(prior, 'utf8')).payload, 'base64url').toString('utf8'));
+  } catch (e) {
+    console.error(`UNREADABLE BASELINE: registry.pub.json did not decode — ${e.message}`);
+    console.error('Refusing: a baseline that cannot be read cannot be appended to.');
+    process.exit(1);
+  }
+  if (!Number.isInteger(prev.generation) || !Array.isArray(prev.species) || prev.species.length === 0) {
+    console.error('EMPTY BASELINE: registry.pub.json decoded, but carries no generation number or no species.');
+    console.error('Refusing: every comparison below would pass by having nothing to compare.');
+    process.exit(1);
+  }
+  console.log(`  baseline: generation ${prev.generation}, ${prev.species.length} species, ${channelRefs(prev).size} channel(s).`);
+  return prev;
+}
+
+/**
+ * B205's actual incident, and the only check that can see it.
+ *
+ * `publish` re-signs the WHOLE registry from this clone, so the clone IS the next generation.
+ * A clone that is behind does not merely miss new content: it silently unpublishes everything
+ * added since it was last pulled, and the append-only guard cannot help, because a channel the
+ * stale clone never knew about is absent from its baseline too. There is nothing to compare.
+ *
+ * So compare the baseline against the world: byte-for-byte with what the live channel is
+ * serving at this moment. Equal generations with different bytes is the same failure wearing a
+ * different hat — a re-sign that did not bump.
+ *
+ * Refuses rather than warns, because the incident it prevents produced no error anywhere and a
+ * warning in a wall of publish output is not a stop.
+ */
+async function assertCloneIsCurrent(prev) {
+  if (!prev) return; // genesis: already an explicit, named decision in readBaseline
+  if (process.env.PALPACK_SKIP_FRESHNESS === '1') {
+    console.warn('  freshness: SKIPPED by PALPACK_SKIP_FRESHNESS=1. You are asserting by hand that');
+    console.warn(`  freshness: this clone is current. B205 is the incident that costs. (local generation ${prev.generation})`);
+    return;
+  }
+  const url = process.env.PALPACK_REGISTRY_URL || `${LIVE_BASE}/registry.pub.json`;
+  let liveText;
+  try {
+    const res = await fetch(url, { cache: 'no-store' });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    liveText = await res.text();
+  } catch (e) {
+    console.error(`CANNOT CONFIRM FRESHNESS: ${url} — ${e.message}`);
+    console.error('Refusing rather than warning: publishing from a clone of unknown age is how a');
+    console.error('signed generation gets re-issued and a whole channel disappears with it (B205).');
+    console.error('Offline on purpose? PALPACK_SKIP_FRESHNESS=1 — a decision, not a shortcut.');
+    process.exit(1);
+  }
+  let live;
+  try {
+    live = JSON.parse(Buffer.from(JSON.parse(liveText).payload, 'base64url').toString('utf8'));
+  } catch (e) {
+    console.error(`CANNOT CONFIRM FRESHNESS: the live registry did not decode — ${e.message}`);
+    process.exit(1);
+  }
+  if (!Number.isInteger(live.generation)) {
+    console.error('CANNOT CONFIRM FRESHNESS: the live registry carries no generation number.');
+    process.exit(1);
+  }
+  if (prev.generation < live.generation) {
+    console.error(`STALE CLONE: this clone's baseline is generation ${prev.generation}; the live channel already serves ${live.generation}.`);
+    console.error(`Publishing would re-issue generation ${prev.generation + 1} — already signed, already cached — and would`);
+    console.error('drop every channel and entry the newer generations added, with no error anywhere.');
+    console.error('Fast-forward the content clone (git pull) and start the drop again. This is B205.');
+    process.exit(1);
+  }
+  if (prev.generation > live.generation) {
+    console.error(`UNPUSHED PUBLISH: this clone's baseline is generation ${prev.generation}; the live channel serves ${live.generation}.`);
+    console.error('A push IS the content deploy, so an unpushed publish is a generation the world never got.');
+    console.error(`Push it before publishing again, or the next signature lands on ${prev.generation + 1} and ${live.generation + 1} is skipped forever.`);
+    process.exit(1);
+  }
+  const localText = readFileSync(join(ROOT, 'registry.pub.json'), 'utf8');
+  if (localText.trim() !== liveText.trim()) {
+    console.error(`DIVERGED CLONE: this clone's registry.pub.json and the live one both say generation ${prev.generation}, but differ.`);
+    console.error('One of them was signed without bumping, so "what the world has" is not what this clone');
+    console.error('would append to. Reconcile before publishing — do not sign over it.');
+    process.exit(1);
+  }
+  console.log(`  freshness: baseline generation ${prev.generation} is byte-identical to ${url}.`);
+}
+
+/**
+ * Every payload key that holds a signed FILE channel, DERIVED from the payload itself (B205).
+ *
+ * A channel is any key whose value is a {file, sha256} ref — that shape is what makes the
+ * client fetch, sha-verify and register a second file, so it is what makes a key a channel.
+ * Nothing here knows the words "wardrobe" or "backgrounds", and that is the entire point: the
+ * two-name list this replaced is why the backgrounds channel shipped unguarded, and a
+ * three-name list would be why the fourth one does.
+ */
+function channelRefs(payload) {
+  const out = new Map();
+  for (const [k, v] of Object.entries(payload)) {
+    if (v && typeof v === 'object' && !Array.isArray(v)
+      && typeof v.file === 'string' && typeof v.sha256 === 'string') out.set(k, v);
+  }
+  return out;
+}
+
+/**
+ * The entry list inside a channel file, derived the same way on both sides of the comparison.
+ *
+ * Channel files are `{ schema, <one array of entries> }` — `cosmetics` in
+ * cachepal-cosmetics-v1, `backgrounds` in cachepal-backgrounds-v1 — so the entries are the
+ * single array-valued property, not a property name this function was told. Anything it cannot
+ * read that way is refused rather than skipped: "I could not find the entries" and "there are
+ * no missing entries" must never produce the same outcome.
+ */
+function channelEntries(content, where, mustBeNonEmpty = false) {
+  if (!content || typeof content !== 'object') {
+    console.error(`CANNOT VERIFY ${where}: not a JSON object.`);
+    process.exit(1);
+  }
+  const arrays = Object.entries(content).filter(([, v]) => Array.isArray(v));
+  if (arrays.length !== 1) {
+    console.error(`CANNOT VERIFY ${where}: expected exactly one array of entries, found ${arrays.length}`
+      + `${arrays.length ? ` (${arrays.map(([k]) => k).join(', ')})` : ''}.`);
+    console.error('Refusing: a channel whose entries cannot be located cannot be checked for deletions.');
+    process.exit(1);
+  }
+  const [prop, list] = arrays[0];
+  const keys = list.map(e => (e && typeof e.key === 'string') ? e.key : null);
+  if (keys.some(k => !k)) {
+    console.error(`CANNOT VERIFY ${where}: an entry in '${prop}' has no string 'key' to track it by.`);
+    process.exit(1);
+  }
+  if (mustBeNonEmpty && keys.length === 0) {
+    console.error(`CANNOT VERIFY ${where}: a previously published channel file with zero entries is not`);
+    console.error('what was published. Refusing rather than passing a comparison against nothing.');
+    process.exit(1);
+  }
+  return { prop, keys };
+}
+
+/**
+ * Nothing generation N published may be missing from N+1 (B205, D30, D61).
+ *
+ * Three deletions, one shape: a species id, a whole channel, an entry inside a channel. The
+ * channel set comes from `channelRefs(prev)` — the previous payload's own keys — so a channel
+ * added in the future is guarded from its first published generation with no edit here, and a
+ * channel this run simply forgot to emit is a refusal rather than a silent unpublish.
+ *
+ * Growth is explicitly fine. A channel that has never existed may appear, because a guard that
+ * refuses growth is a guard the next person who needs to grow switches off.
+ */
+function assertAppendOnly(prev, next, allSpecies, channels) {
+  if (!prev) return; // genesis, already opted into loudly
+  const byName = new Map(channels.map(c => [c.name, c]));
+
+  for (const p of prev.species) {
+    if (!allSpecies.some(a => a.species.id === p.id)) {
+      console.error(`APPEND-ONLY VIOLATION: id ${p.id} (${p.key}) vanished from species/. Delist it instead.`);
+      process.exit(1);
+    }
+  }
+
+  const before = channelRefs(prev);
+  const after = channelRefs(next);
+  let comparedChannels = 0;
+  let comparedEntries = 0;
+
+  for (const [name, ref] of before) {
+    if (!after.has(name)) {
+      console.error(`APPEND-ONLY VIOLATION: channel '${name}' is in generation ${prev.generation} and would not be in ${prev.generation + 1}.`);
+      console.error(`Generation ${prev.generation} named ${ref.file}; this run names nothing, so publishing`);
+      console.error(`would UNPUBLISH the whole channel for everyone who owns something in it — silently,`);
+      console.error('because the client simply stops seeing a field it used to read.');
+      console.error(`If this clone's palpack predates '${name}', it is the wrong clone to publish from (B205).`);
+      process.exit(1);
+    }
+    const priorPath = join(ROOT, ref.file);
+    if (!existsSync(priorPath)) {
+      console.error(`CANNOT VERIFY channel '${name}': generation ${prev.generation} names ${ref.file}, which is not in this clone.`);
+      console.error('Refusing: without the previous file there is nothing to compare, and passing here');
+      console.error('would let every entry in the channel disappear unnoticed.');
+      process.exit(1);
+    }
+    // The prior file must BE the artifact generation N signed, proven against the sha the
+    // payload already pins — not merely a file sitting at that path. Found by attack: the
+    // backgrounds artifact is stored verbatim under a stable name, so editing a scene OUT of it
+    // in place left `prior` and `next` as the same bytes on disk and the entry comparison
+    // passed against itself. A published channel file is immutable (the upstream painter emits
+    // `backgrounds-<sha8>.json`, the wardrobe writer emits `cosmetics-<sha8>.json`), so a
+    // mismatch here means the record of what was published no longer exists.
+    const priorBytes = readFileSync(priorPath);
+    const priorSha = createHash('sha256').update(priorBytes).digest('hex');
+    if (priorSha !== ref.sha256) {
+      console.error(`CANNOT VERIFY channel '${name}': ${ref.file} no longer hashes to what generation ${prev.generation} signed.`);
+      console.error(`  signed  ${ref.sha256}`);
+      console.error(`  on disk ${priorSha}`);
+      console.error('A published channel file is immutable. Edited in place it can no longer say what was');
+      console.error('published, and every deletion made inside it would pass by being compared to itself.');
+      console.error('Emit a NEW content-hashed file and point the channel at that instead.');
+      process.exit(1);
+    }
+    let priorContent;
+    try { priorContent = JSON.parse(priorBytes.toString('utf8')); }
+    catch (e) {
+      console.error(`CANNOT VERIFY channel '${name}': ${ref.file} did not parse — ${e.message}`);
+      process.exit(1);
+    }
+    const wasEntries = channelEntries(priorContent, `${ref.file} (generation ${prev.generation})`, true);
+    const nowChannel = byName.get(name);
+    if (!nowChannel) {
+      // The ref survived into the payload but no descriptor built it: unreachable today, and a
+      // refusal rather than a crash if a future edit makes it reachable.
+      console.error(`CANNOT VERIFY channel '${name}': the payload names it but nothing assembled it.`);
+      process.exit(1);
+    }
+    const nowEntries = channelEntries(nowChannel.content, nowChannel.ref.file);
+    const missing = wasEntries.keys.filter(k => !nowEntries.keys.includes(k));
+    if (missing.length > 0) {
+      const hint = name === 'wardrobe'
+        ? `  node tools/palpack.mjs withdraw ${missing[0]} "<reason>"`
+        : `  keep the entry in the file — it is what an owner's copy resolves against.`;
+      console.error(`APPEND-ONLY VIOLATION: ${name} entr${missing.length === 1 ? 'y' : 'ies'} ${missing.map(k => `'${k}'`).join(', ')} `
+        + `vanished from ${nowChannel.ref.file}.`);
+      console.error('Whoever owns one keeps the purchase and loses the thing: it stops resolving, so it');
+      console.error('stops appearing, with no error on their device. Stop distributing; never confiscate.');
+      console.error(hint);
+      process.exit(1);
+    }
+    comparedChannels++;
+    comparedEntries += wasEntries.keys.length;
+    console.log(`  append-only: ${name} ${wasEntries.keys.length} → ${nowEntries.keys.length} entr${nowEntries.keys.length === 1 ? 'y' : 'ies'}, none removed.`);
+  }
+
+  for (const name of after.keys()) {
+    if (!before.has(name)) console.log(`  append-only: '${name}' is a NEW channel — allowed, the guard is append-only, not frozen.`);
+  }
+
+  // The anchor. Everything above can only report a violation it FOUND, so say what was found;
+  // a run that compared nothing while the baseline carried channels has not verified anything.
+  if (before.size !== comparedChannels) {
+    console.error(`GUARD INCOMPLETE: ${before.size} channel(s) in generation ${prev.generation}, ${comparedChannels} compared.`);
+    process.exit(1);
+  }
+  console.log(`  append-only: compared ${prev.species.length} species and ${comparedChannels} channel(s)`
+    + ` / ${comparedEntries} channel entr${comparedEntries === 1 ? 'y' : 'ies'} against generation ${prev.generation}.`);
 }
 
 function scaffold(key, id) {

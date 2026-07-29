@@ -63,6 +63,20 @@ any disagreement with this file:
 8. `tools/palpack.mjs` is the authoritative validator for everything above. If
    this README and the validator disagree, the validator is right and this file
    is the bug.
+9. **Every channel is append-only, not just species and cosmetics.** `publish`
+   re-signs the WHOLE registry, so a channel this run does not emit is
+   *unpublished* for everyone who owns something in it. The guard derives the
+   channel set from the previous payload's own keys — anything shaped
+   `{file, sha256}` — so a channel present in generation N and absent in N+1 is
+   refused, and so is an entry inside one. Growth is fine: a channel that has
+   never existed may appear. A published channel file is **immutable**; to change
+   one, emit a new content-hashed file and repoint it, never edit it in place
+   (`publish` checks the previous file against the sha the payload pins).
+10. **Publish only from a clone that matches what the channel is serving.**
+    `publish` fetches the live `registry.pub.json` and refuses unless this
+    clone's is byte-identical. A stale clone re-issues a generation that is
+    already signed and cached and silently drops whatever the newer generations
+    added — which is what nearly happened in wave 40. `git pull` first.
 
 ## Publish flow
 
