@@ -1,0 +1,11 @@
+{
+  "key": "thistledown",
+  "baseColor": "#D7CCE8",
+  "shinyColor": "#FFD54F",
+  "bodyArchetype": "wisp",
+  "hungryFor": "dew drops",
+  "needDecayBias": [0.9, 1.0, 0.8, 1.1, 1.0],
+  "babyDescription": "A single seed with a parachute three sizes too big.",
+  "teenDescription": "Catches drafts on purpose and apologizes to nobody.",
+  "adultDescription": "A crowned drifter that steers by wishing."
+}

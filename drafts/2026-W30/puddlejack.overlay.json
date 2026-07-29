@@ -1,0 +1,11 @@
+{
+  "key": "puddlejack",
+  "baseColor": "#4FA3D1",
+  "shinyColor": "#C0F075",
+  "bodyArchetype": "blob",
+  "hungryFor": "fresh puddles",
+  "needDecayBias": [1.1, 1.2, 1.2, 0.9, 1.0],
+  "babyDescription": "One raindrop with outsized ambition.",
+  "teenDescription": "Splashes first, giggles second, dries never.",
+  "adultDescription": "A rain spirit in a puddle-brim hat, always mid-prank."
+}

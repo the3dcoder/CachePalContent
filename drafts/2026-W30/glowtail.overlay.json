@@ -1,0 +1,11 @@
+{
+  "key": "glowtail",
+  "baseColor": "#1DE9B6",
+  "shinyColor": "#FF4081",
+  "bodyArchetype": "quad",
+  "hungryFor": "glow gnats",
+  "needDecayBias": [1.0, 1.1, 0.9, 1.2, 0.9],
+  "babyDescription": "A dim little squiggle that flickers when it sneezes.",
+  "teenDescription": "Practices glow-letters on the ceiling after bedtime.",
+  "adultDescription": "A neon calligrapher with a tail full of names."
+}
