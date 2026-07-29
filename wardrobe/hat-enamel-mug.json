@@ -1,0 +1,34 @@
+{
+  "key": "hat-enamel-mug",
+  "name": "Enamel Mug",
+  "slot": "hat",
+  "tier": "common",
+  "price": 120,
+  "milestoneKey": "",
+  "wanders": false,
+  "lore": "Navy rim, one chip, and more tea through it than most cupboards see in a lifetime. Retired to a warmer job.",
+  "grid": [
+    "................",
+    ".......wwww.....",
+    "......wwwwwwss..",
+    ".....uuuuuuuus..",
+    "....kkkkk.kkk...",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................"
+  ],
+  "palette": {
+    "w": "#F2EDE3",
+    "u": "#4E6E9E",
+    "s": "#E3DCCF",
+    "k": "#6B6357"
+  }
+}
