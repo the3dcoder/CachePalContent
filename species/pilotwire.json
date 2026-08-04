@@ -5,7 +5,7 @@
   "name": "Pilotwire",
   "description": "Somebody has to go under the road first. Pilotwire does it in the dark, on its own, with nothing behind it but a knot and somebody's word that they will pull - and when it comes out the far side, the whole street gets its evening back. It has never once used the way it made. It does not appear to think of that as sad.",
   "credit": "Cache Pal Studio",
-  "baseColor": "#4A63C8",
+  "baseColor": "#5665BC",
   "shinyColor": "#F2C14E",
   "bodyArchetype": "serpent",
   "statBias": [
@@ -45,5 +45,12 @@
     "................",
     "................"
   ],
-  "weight": 52
+  "weight": 52,
+  "history": [
+    {
+      "date": "2026-08-04",
+      "change": "dex-edit: baseColor #4A63C8 -> #5665BC, clearing puddlejack at 2.0 across the hue sweep. This is W64-ROSTER group C, not the canonical-colour bar: a species swept over its whole plus-or-minus 30 degree hue range must stay a just-noticeable difference away from every OTHER species at rest, or a mutated Pal reads as a different species. A single sample at 0 degrees cannot see this and did not — the canonical measurement passed all three of these before the gate was extended to cover pack species at all.",
+      "by": "operator"
+    }
+  ]
 }

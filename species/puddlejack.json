@@ -7,7 +7,7 @@
   "credit": "Cache Pal Studio",
   "createdBy": "Cache Pal Studio",
   "element": "Tide",
-  "baseColor": "#4FA3D1",
+  "baseColor": "#33A2ED",
   "shinyColor": "#C0F075",
   "bodyArchetype": "blob",
   "statBias": [
@@ -91,6 +91,11 @@
       "date": "2026-07-24",
       "change": "created (drop 2026-W30)",
       "by": "Cache Pal Studio"
+    },
+    {
+      "date": "2026-08-04",
+      "change": "dex-edit: baseColor #4FA3D1 -> #33A2ED, clearing glitchfin at 2.2, sendling at 1.3 and pilotwire at 1.6 across the hue sweep. This is W64-ROSTER group C, not the canonical-colour bar: a species swept over its whole plus-or-minus 30 degree hue range must stay a just-noticeable difference away from every OTHER species at rest, or a mutated Pal reads as a different species. A single sample at 0 degrees cannot see this and did not — the canonical measurement passed all three of these before the gate was extended to cover pack species at all.",
+      "by": "operator"
     }
   ]
 }

@@ -7,7 +7,7 @@
   "credit": "Cache Pal Studio",
   "createdBy": "Cache Pal Studio",
   "element": "Alloy",
-  "baseColor": "#7C93A8",
+  "baseColor": "#5E8A99",
   "shinyColor": "#D9A537",
   "bodyArchetype": "shell",
   "statBias": [
@@ -96,6 +96,11 @@
       "date": "2026-07-25",
       "change": "cosmetics withheld pending the v1.8.1 pack parser",
       "by": "Cache Pal Studio"
+    },
+    {
+      "date": "2026-08-04",
+      "change": "dex-edit: baseColor #7C93A8 -> #5E8A99, clearing echowl at 7.1 and hushwing at 6.6. W64-ROSTER wants dE00 >= 10 between any two species and only ever measured the fourteen COMPILED ones, so no pack species had been checked against anything since the registry began (B343). Measured across the whole 32-species roster; this is the smallest move that clears 11 against all 31 others. Four pack species were moved rather than eight, because every colliding pair has a pack species in it and the compiled roster needs no change at all.",
+      "by": "operator"
     }
   ],
   "cosmetics": [
