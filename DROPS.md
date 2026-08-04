@@ -201,3 +201,45 @@ for stops appearing, which is the same broken promise a vanished hat would be.
 Signed only after the **signed file bytes** were read back through the shipped
 `BackgroundFile` reader — one scene, price 900, band and rest spots intact, art arriving as
 a data URI — which is the check generation 4 did not have.
+
+## Generation 10 — drop 2026-W32 (2026-08-04)
+
+**Twelve new species, ids 20–31, taking the live roster from twenty to thirty-two.** Six counterpart
+pairs — a made thing and a grown thing on the same body plan, opposite in nature — spread across the
+archetypes the roster was thinnest in: serpent, jelly, fish, crawler, bloom and shell each had one or
+two species and now have three or four.
+
+Eight arrive day-one. **Four are earned** on the expedition ladder, gated as whole pairs rather than
+halves: the crawlers (`tallymite`, `shinglecoat`) at the Dusk Market's rung, the shells
+(`bramblewick`, `palisade`) at the Chalk Downs'. A pair exists to be read against itself, so gating
+one and not the other would hand a keeper half a joke. The rungs are the ladder's own, read through
+`MilestoneCatalog` rather than retyped, and the counter behind them sums over every Pal a keeper has
+raised INCLUDING THE DEPARTED — a species that appeared on somebody's board must never leave it
+because a Pal died.
+
+**Seven species were recoloured, all of them pack-side, and the compiled roster was not touched.**
+Four for canonical separation: `glowtail`, `hushwing`, `latchback`, `thistledown` sat below
+`W64-ROSTER`'s dE00 bar of 10 against species they could genuinely be confused with, the worst pair
+at 5.0 — near the just-noticeable difference. Those six collisions had existed since the registry
+began and nothing had ever measured them, because `W64` enumerated only the fourteen COMPILED
+species. It now reads the content repo too (B343).
+
+Three more for something a canonical measurement cannot see. `W64`'s group C sweeps every species
+across its whole ±30° hue range and requires it to stay a just-noticeable difference from every
+other species AT REST — and a hue-shifted `glitchfin` read as `sendling` at **0.7** and as
+`puddlejack` at **1.5**. A mutated Pal that looks like a different species. Twenty-eight crossings
+across eight directed pairs, all in one blue/cyan cluster, cleared by moving `sendling`, `pilotwire`
+and `puddlejack`.
+
+**Why this drop was signed twice.** The first attempt produced a generation 10 containing SIX
+species while eighteen were being published: the session's working copy was reverted underneath the
+tool between `validate` (which counted 18) and `publish` (which read 6). Every existing gate was
+satisfied, because they all ask whether the tree is internally consistent and current against the
+live registry, and a smaller tree is both. Nothing reached the CDN only because the push had not
+happened — luck, not a control.
+
+`palpack publish` now REFUSES an unpinned tree: `PALPACK_EXPECT_COMMIT` and
+`PALPACK_EXPECT_SPECIES` must be set, and both are re-checked immediately before the first byte is
+written, because the whole point is that the tree can move mid-run. The commit is the pin rather
+than the count alone, since eighteen species can be the wrong eighteen. Attack-proven three ways
+before this drop was signed with it.

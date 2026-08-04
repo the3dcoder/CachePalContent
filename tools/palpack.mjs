@@ -63,6 +63,7 @@
 // packs; v2 species are invisible to those clients until they update, which
 // only ever withholds a species they never had. Registry schema is unchanged.
 
+import { execFileSync } from 'node:child_process';
 import { createHash, createPrivateKey, sign } from 'crypto';
 import { readFileSync, writeFileSync, readdirSync, existsSync, mkdirSync } from 'fs';
 import { join, dirname } from 'path';
@@ -333,6 +334,61 @@ function canonical(obj) {
   return JSON.stringify(obj);
 }
 
+// ── B350: THE TREE MUST BE THE TREE THE OPERATOR MEANT TO SIGN ──────────────────────────────────
+//
+// On 2026-08-04 this tool signed a generation containing SIX species while the operator was
+// publishing EIGHTEEN. Nothing was wrong with the tool: the session's working copy was reverted
+// underneath it, between `validate` (which counted 18 and passed) and `publish` (which read 6 and
+// signed them). Every existing gate was satisfied, because every existing gate asks whether the
+// tree is INTERNALLY consistent and current against the live registry — and a smaller tree is both.
+//
+// Nothing reached production that day only because the push had not happened yet. That is luck, and
+// luck is not a control on an append-only, publicly cached, signed artifact.
+//
+// So: the operator PINS what they are signing, and this refuses if the tree has moved. The commit
+// is the pin rather than a count, because a count of eighteen can be satisfied by the wrong
+// eighteen, while a revert always moves HEAD. The count is kept as a second term because an
+// uncommitted deletion does not move HEAD at all.
+//
+// Checked TWICE — once on entry so a wrong pin costs nothing, and again immediately before the
+// first byte is written, because the whole point is that the tree can move mid-run.
+function assertPinnedTree(speciesCount, when) {
+  const pinCommit = process.env.PALPACK_EXPECT_COMMIT;
+  const pinCount = process.env.PALPACK_EXPECT_SPECIES;
+  if (!pinCommit && !pinCount) {
+    console.error('REFUSING TO SIGN AN UNPINNED TREE.');
+    console.error('  Set PALPACK_EXPECT_COMMIT to the commit you mean to publish (git rev-parse HEAD),');
+    console.error('  and PALPACK_EXPECT_SPECIES to how many species it should contain.');
+    console.error('  Both are cheap; a wrong generation is permanent (B350).');
+    process.exit(2);
+  }
+  if (pinCount !== undefined && Number(pinCount) !== speciesCount) {
+    console.error(`TREE MOVED (${when}): expected ${pinCount} species, found ${speciesCount}.`);
+    console.error('  Refusing rather than signing a set the operator did not choose.');
+    process.exit(1);
+  }
+  if (pinCommit) {
+    let head = '';
+    try {
+      head = execFileSync('git', ['-C', ROOT, 'rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
+    } catch (err) {
+      // Narrow deliberately. A bare `catch` here reported a missing `execFileSync` import as
+      // "cannot read HEAD" — a programming error wearing an environment error's clothes, which
+      // made the commit pin look like it was working when it had never run once. Anything that is
+      // not git failing is re-thrown.
+      if (err instanceof ReferenceError || err instanceof TypeError) throw err;
+      console.error(`CANNOT READ HEAD (${when}) — a pinned publish needs a git checkout it can resolve.`);
+      console.error(`  ${String(err.message).split('\n')[0]}`);
+      process.exit(1);
+    }
+    if (head !== pinCommit) {
+      console.error(`TREE MOVED (${when}): expected commit ${pinCommit}, HEAD is ${head}.`);
+      console.error('  The working copy is not the one that was reviewed. Refusing.');
+      process.exit(1);
+    }
+  }
+}
+
 async function publish() {
   const key = process.env.PALPACK_KEY;
   if (!key) { console.error('Set PALPACK_KEY to the PRIVATE signing value (base64url).'); process.exit(2); }
@@ -343,6 +399,7 @@ async function publish() {
   const privateKey = createPrivateKey({ key: privDer, format: 'der', type: 'pkcs8' });
 
   const { species: all, wardrobe } = validateAll();
+  assertPinnedTree(all.length, 'on entry');
 
   // Gate 1 (B205): what are we appending TO? Both halves refuse rather than warn.
   const prev = readBaseline();
@@ -353,6 +410,9 @@ async function publish() {
   // WITHOUT writing a byte. The append-only guard then compares the previous payload against
   // the payload that is actually about to be signed, rather than against a proxy for it, and
   // a refusal leaves the working tree exactly as it found it.
+  // The tree can move between the read above and the write below — it did, once.
+  assertPinnedTree(all.length, 'before writing');
+
   const entries = [];
   const packWrites = [];
   for (const { species: s } of all.slice().sort((a, b) => a.species.id - b.species.id)) {
