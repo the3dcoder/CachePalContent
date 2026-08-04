@@ -45,5 +45,13 @@
     "................",
     "................"
   ],
-  "weight": 52
+  "weight": 52,
+  "obtainRule": "milestone-expeditions-30",
+  "history": [
+    {
+      "date": "2026-08-04",
+      "change": "obtainRule: milestone-expeditions-30 — this species is EARNED rather than day-one. Gated as a whole shell pair, never half of one: the two creatures in a pair are built to be read against each other, so gating one and not the other would hand a keeper half a joke. The rung is the expedition ladder’s own, so this arrives on a day a route already opens.",
+      "by": "operator"
+    }
+  ]
 }

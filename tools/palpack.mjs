@@ -84,6 +84,16 @@ const GRID_LEGEND = new Set([...'.ABCEMOSWX']);
 // it may only grow after a release carrying the new archetype is the floor. `pack-agreement.mjs`
 // now holds it from the other side (B341): it asserts palpack ACCEPTS every archetype the client
 // knows, which is the direction that was missing when this drifted.
+// Discovery rule keys the shipped client can satisfy. Grows only when the game ships one and
+// that release is the floor in the wild — the same rule the archetype set carries, written out
+// there in full.
+const OBTAIN_RULES = new Set([
+  'always', 'morning', 'evening-night', 'weekend', 'winter', 'summer', 'spring', 'autumn',
+  'time-noon', 'weather-rain', 'weather-snow', 'weather-clear', 'gps-anywhere', 'gps-water',
+  'milestone-pals-5', 'milestone-perfect-7', 'milestone-battles-10',
+  'milestone-expeditions-8', 'milestone-expeditions-30',
+]);
+
 const ARCHETYPES = new Set([
   'blob', 'quad', 'wisp', 'shell', 'fish', 'avian', 'biped', 'jelly', 'serpent', 'bloom', 'crawler',
 ]);
@@ -138,6 +148,13 @@ function validateAll() {
       if (!/^#[0-9A-Fa-f]{6}$/.test(s[c])) fail(ctx, `${c} must be #RRGGBB`);
     }
     if (!ARCHETYPES.has(s.bodyArchetype)) fail(ctx, `bodyArchetype must be one of ${[...ARCHETYPES].join('/')}`);
+  // The discovery rules the shipped client knows (B345/D227). Same contract as ARCHETYPES above,
+  // and for the same reason B340 exists: a rule key this list allows but a client does not know
+  // normalises to "always" there, so a species meant to be EARNED would arrive on day one for
+  // everybody and nothing would say so. `pack-agreement.mjs` holds both directions.
+  if (s.obtainRule !== undefined && !OBTAIN_RULES.has(s.obtainRule)) {
+    fail(ctx, `obtainRule must be one of ${[...OBTAIN_RULES].join('/')}`);
+  }
     if (!Array.isArray(s.statBias) || s.statBias.length !== 6 || !s.statBias.every(n => Number.isInteger(n) && n >= -5 && n <= 8)) {
       fail(ctx, 'statBias must be 6 ints in -5..8');
     }
