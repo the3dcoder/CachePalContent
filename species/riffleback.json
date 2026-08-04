@@ -1,0 +1,49 @@
+{
+  "schema": "cachepal-pack-v1",
+  "id": 25,
+  "key": "riffleback",
+  "name": "Riffleback",
+  "description": "Riffleback chose one stone in fast water and has not left it since. It faces upstream and holds, so completely still that the current looks like the only thing in the river doing any work. It is not. It knows the few feet around that stone better than most creatures know their own names.",
+  "credit": "Cache Pal Studio",
+  "baseColor": "#8C9A66",
+  "shinyColor": "#C8B27A",
+  "bodyArchetype": "fish",
+  "statBias": [
+    3,
+    -3,
+    4,
+    4,
+    0,
+    -1
+  ],
+  "hungryFor": "whatever drifts past",
+  "needDecayBias": [
+    1.15,
+    0.75,
+    1.25,
+    0.7,
+    0.85
+  ],
+  "babyDescription": "Washed downstream a dozen times a day, and swims back up a dozen times a day.",
+  "teenDescription": "Has found its stone. Will not discuss other stones.",
+  "adultDescription": "Facing upstream, exactly where it was last year, and the year before that.",
+  "feature": [
+    "................",
+    "................",
+    ".......AAA......",
+    "................",
+    "................",
+    "........S.S.....",
+    "........S.S.....",
+    "........S.S.....",
+    "........S.S.....",
+    "................",
+    "................",
+    "................",
+    "................",
+    "......OAOA......",
+    "........A.......",
+    "................"
+  ],
+  "weight": 50
+}
