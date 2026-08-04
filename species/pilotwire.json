@@ -1,0 +1,49 @@
+{
+  "schema": "cachepal-pack-v1",
+  "id": 20,
+  "key": "pilotwire",
+  "name": "Pilotwire",
+  "description": "Somebody has to go under the road first. Pilotwire does it in the dark, on its own, with nothing behind it but a knot and somebody's word that they will pull - and when it comes out the far side, the whole street gets its evening back. It has never once used the way it made. It does not appear to think of that as sad.",
+  "credit": "Cache Pal Studio",
+  "baseColor": "#4A63C8",
+  "shinyColor": "#F2C14E",
+  "bodyArchetype": "serpent",
+  "statBias": [
+    1,
+    -1,
+    2,
+    2,
+    0,
+    4
+  ],
+  "hungryFor": "duct grease",
+  "needDecayBias": [
+    0.8,
+    0.9,
+    1.25,
+    1.15,
+    1.0
+  ],
+  "babyDescription": "A stiff little length that cannot turn a corner yet, and is furious about it.",
+  "teenDescription": "Long enough now to cross a room under the carpet. Has firm views about doors.",
+  "adultDescription": "Forty metres of patience with a lamp on its head. Send it anywhere; it comes out.",
+  "feature": [
+    ".....W..........",
+    "....OAO.........",
+    ".....A..........",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................",
+    "......A...A.....",
+    "......A...A.....",
+    "................",
+    "................",
+    "................",
+    "................"
+  ],
+  "weight": 52
+}
