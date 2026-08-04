@@ -1,0 +1,49 @@
+{
+  "schema": "cachepal-pack-v1",
+  "id": 23,
+  "key": "eavesdrop",
+  "name": "Eavesdrop",
+  "description": "For about an hour after the rain, every gutter on the street has one of these hanging off it, holding the whole road upside down and getting slowly heavier. Nobody has ever looked up in time. It lets go at roughly the moment you walk underneath, which it does not consider funny, and which is.",
+  "credit": "Cache Pal Studio",
+  "baseColor": "#8FC3B6",
+  "shinyColor": "#E8B761",
+  "bodyArchetype": "jelly",
+  "statBias": [
+    -1,
+    2,
+    4,
+    -1,
+    1,
+    3
+  ],
+  "hungryFor": "roof rain",
+  "needDecayBias": [
+    1.2,
+    0.7,
+    1.2,
+    0.6,
+    0.9
+  ],
+  "babyDescription": "A bead too small to fall, with the entire hedge already inside it.",
+  "teenDescription": "Heavy enough to wobble now. Holds the street, upside down and slightly bent.",
+  "adultDescription": "A full drop at the end of its hour, keeping everything it has seen until the moment it doesn't.",
+  "feature": [
+    ".......S........",
+    ".......S........",
+    "......SSS.......",
+    "................",
+    ".......W........",
+    "................",
+    "................",
+    "................",
+    "...A....AA......",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................"
+  ],
+  "weight": 38
+}

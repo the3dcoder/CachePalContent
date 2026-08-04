@@ -1,0 +1,49 @@
+{
+  "schema": "cachepal-pack-v1",
+  "id": 22,
+  "key": "blinkbell",
+  "name": "Blinkbell",
+  "description": "Blinkbell hangs in the middle of an empty ceiling and keeps watch over a room where nothing has happened for nine years. It is proud of every single one of them. Once, at about three in the morning, it became convinced that something was happening; it was wrong, it was extremely serious about it, and it apologised to the whole house afterwards.",
+  "credit": "Cache Pal Studio",
+  "baseColor": "#D4506B",
+  "shinyColor": "#5ED0A8",
+  "bodyArchetype": "jelly",
+  "statBias": [
+    0,
+    0,
+    -2,
+    5,
+    0,
+    5
+  ],
+  "hungryFor": "night current",
+  "needDecayBias": [
+    0.7,
+    0.85,
+    0.65,
+    1.1,
+    1.15
+  ],
+  "babyDescription": "A small light with nothing to watch yet, watching it very closely.",
+  "teenDescription": "Has learned the room. Knows which board creaks, and counts it every night.",
+  "adultDescription": "Nine years on the same ceiling, still awake, still certain it will be needed.",
+  "feature": [
+    ".......W........",
+    "......OAO.......",
+    ".......A........",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................",
+    "...A..A..A......",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................"
+  ],
+  "weight": 44
+}
