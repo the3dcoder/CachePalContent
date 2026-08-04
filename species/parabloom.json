@@ -1,0 +1,49 @@
+{
+  "schema": "cachepal-pack-v1",
+  "id": 29,
+  "key": "parabloom",
+  "name": "Parabloom",
+  "description": "Somebody left a dish pointed at the sky and went home, and it has been listening ever since. Parabloom turns all day after whatever is loudest — a weather balloon, a taxi radio, a song from four towns over — and repeats the best of it to whoever is standing nearest. It has never once kept a secret, and it does not understand why anyone would want it to.",
+  "credit": "Cache Pal Studio",
+  "baseColor": "#E3D7BC",
+  "shinyColor": "#4DE0FF",
+  "bodyArchetype": "bloom",
+  "statBias": [
+    0,
+    3,
+    -4,
+    -1,
+    3,
+    7
+  ],
+  "hungryFor": "weather static",
+  "needDecayBias": [
+    1.05,
+    1.2,
+    1.25,
+    0.8,
+    0.95
+  ],
+  "babyDescription": "A saucer no wider than a bottle cap on a stub of mast, turning, finding nothing yet.",
+  "teenDescription": "The dish has opened out and the horn has gone up. Repeats about half of what it hears and is confidently wrong about the rest.",
+  "adultDescription": "A full dish sweeping the sky all day, reporting everything it finds, in order, to nobody in particular.",
+  "feature": [
+    "......AWA.......",
+    ".......A........",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................",
+    ".....A...A......",
+    ".....A...A......",
+    ".....A...A......",
+    "................",
+    "................",
+    "................",
+    "................"
+  ],
+  "weight": 44
+}

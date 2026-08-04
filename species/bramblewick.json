@@ -1,0 +1,49 @@
+{
+  "schema": "cachepal-pack-v1",
+  "id": 30,
+  "key": "bramblewick",
+  "name": "Bramblewick",
+  "description": "Birds sat on it and things grew. Bramblewick carries a hedge it never planted and walks the boundary that hedge has since become, at a pace that brings it back to the same gate about once a year. Nobody has ever moved it out of the way. There is a wren in there.",
+  "credit": "Cache Pal Studio",
+  "baseColor": "#6B4A63",
+  "shinyColor": "#F0C24B",
+  "bodyArchetype": "shell",
+  "statBias": [
+    1,
+    -1,
+    4,
+    4,
+    1,
+    0
+  ],
+  "hungryFor": "nettle tops",
+  "needDecayBias": [
+    0.9,
+    0.8,
+    0.85,
+    1.15,
+    1.0
+  ],
+  "babyDescription": "A bare shell that the birds have already started sitting on.",
+  "teenDescription": "The seeds have taken. It has given up turning round quickly, in case something falls off.",
+  "adultDescription": "A slow hedge with legs, going the long way round a field it has always gone round.",
+  "feature": [
+    "................",
+    "........S.......",
+    "........A.......",
+    ".......AA..A....",
+    "......AAAAAA....",
+    ".....A..........",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................"
+  ],
+  "weight": 52
+}
