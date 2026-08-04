@@ -1,0 +1,49 @@
+{
+  "schema": "cachepal-pack-v1",
+  "id": 24,
+  "key": "sendling",
+  "name": "Sendling",
+  "description": "Sendling has been everywhere and remembers nowhere. It rides whatever happens to be moving and is set down somewhere new before it has finished looking at the last place. It is not lost, exactly. It has simply never been anywhere long enough for the word to apply.",
+  "credit": "Cache Pal Studio",
+  "baseColor": "#3FC9D6",
+  "shinyColor": "#F2E36B",
+  "bodyArchetype": "fish",
+  "statBias": [
+    -1,
+    3,
+    -2,
+    -2,
+    4,
+    4
+  ],
+  "hungryFor": "loose bytes",
+  "needDecayBias": [
+    1.05,
+    1.25,
+    0.75,
+    0.8,
+    1.2
+  ],
+  "babyDescription": "Goes wherever it is put. It has not yet noticed that it is moving.",
+  "teenDescription": "Has learned it can pick which way to go, and picks all of them.",
+  "adultDescription": "Has crossed more ground than anything else here, and could not draw you a map of a single step of it.",
+  "feature": [
+    "................",
+    "........A.......",
+    ".......AAA......",
+    "................",
+    "................",
+    "................",
+    "........SSSS....",
+    "................",
+    "......SSSS......",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................"
+  ],
+  "weight": 52
+}

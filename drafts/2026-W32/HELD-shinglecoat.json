@@ -1,0 +1,49 @@
+{
+  "schema": "cachepal-pack-v1",
+  "id": 27,
+  "key": "shinglecoat",
+  "name": "Shinglecoat",
+  "description": "Shinglecoat carries its whole life on its back: grit, a fleck of shell, a chip of something blue that was probably a plate. It adds one piece at a time and never takes anything off again. Ask where any particular piece came from and you get the same slow blink you would get for any other question.",
+  "credit": "Cache Pal Studio",
+  "baseColor": "#AE9679",
+  "shinyColor": "#7FC79A",
+  "bodyArchetype": "crawler",
+  "statBias": [
+    2,
+    1,
+    2,
+    4,
+    2,
+    -3
+  ],
+  "hungryFor": "the green off stones",
+  "needDecayBias": [
+    1.1,
+    0.7,
+    0.75,
+    1.2,
+    0.85
+  ],
+  "babyDescription": "Bare-backed and self-conscious about it. Already carrying one grain of sand.",
+  "teenDescription": "Half covered, and choosy in a way nobody else can predict.",
+  "adultDescription": "Wearing eleven years of small findings, and still looking.",
+  "feature": [
+    "................",
+    "................",
+    "........A.AA....",
+    ".......AAAAA....",
+    "................",
+    "................",
+    ".........A......",
+    "..........A.A...",
+    "........A.......",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................"
+  ],
+  "weight": 46
+}
