@@ -63,13 +63,37 @@
 // packs; v2 species are invisible to those clients until they update, which
 // only ever withholds a species they never had. Registry schema is unchanged.
 
-import { execFileSync } from 'node:child_process';
+import { execFileSync, spawnSync } from 'node:child_process';
 import { createHash, createPrivateKey, sign } from 'crypto';
 import { readFileSync, writeFileSync, readdirSync, existsSync, mkdirSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
+
+// ── B351: node's fetch does not read HTTPS_PROXY on its own ────────────────────────────────────
+// `NODE_USE_ENV_PROXY` is read by undici at STARTUP, so setting `process.env` from inside this file
+// is too late. Behind an egress proxy the symptom is an HTTP **403 on a URL curl fetches fine** —
+// which the freshness check below reports as "CANNOT CONFIRM FRESHNESS", reading exactly like a
+// stale clone, and which then offers `PALPACK_SKIP_FRESHNESS=1`.
+//
+// That is the worst possible place for a misleading diagnosis. Skipping freshness is the one
+// shortcut that disables the check standing between a re-issued generation and a whole channel
+// disappearing (B205), and an operator who believes the CDN is refusing them has no reason not to
+// take it. It nearly happened during the wave 47 drop.
+//
+// So: re-exec once with the flag set, rather than requiring every operator to know this. Same shape
+// as `deploy/checks/drop-cadence.mjs`, which hit the identical blind spot (B328). TLS verification
+// is NOT touched — the proxy's CA is already trusted, and turning it off to make a fetch succeed
+// would trade the whole point of a signed registry for a green run.
+if (process.env.HTTPS_PROXY && !process.env.NODE_USE_ENV_PROXY && !process.env.PALPACK_REEXEC) {
+  const r = spawnSync(process.execPath, [fileURLToPath(import.meta.url), ...process.argv.slice(2)], {
+    stdio: 'inherit',
+    env: { ...process.env, NODE_USE_ENV_PROXY: '1', PALPACK_REEXEC: '1' },
+  });
+  process.exit(r.status ?? 1);
+}
+
 const LEGEND = new Set(['.', 'O', 'B', 'S', 'A', 'E', 'W', 'M', 'C', '#']);
 // Custom body grids use the composer ROLE alphabet (SpeciesSubmission.AllowedChars
 // in the game — X = feature role, no '#'). Distinct from the v1 feature LEGEND.
@@ -586,6 +610,12 @@ async function assertCloneIsCurrent(prev) {
     liveText = await res.text();
   } catch (e) {
     console.error(`CANNOT CONFIRM FRESHNESS: ${url} — ${e.message}`);
+    if (/40[37]/.test(String(e.message))) {
+      console.error('  A 403/407 here is USUALLY A PROXY, not the CDN and not a stale clone: node\'s');
+      console.error('  fetch needs NODE_USE_ENV_PROXY. This tool re-execs with it set, so if you are');
+      console.error('  still seeing this, check `curl` against the same URL before reaching for the');
+      console.error('  skip flag below — the skip is what B205 exists to prevent (B351).');
+    }
     console.error('Refusing rather than warning: publishing from a clone of unknown age is how a');
     console.error('signed generation gets re-issued and a whole channel disappears with it (B205).');
     console.error('Offline on purpose? PALPACK_SKIP_FRESHNESS=1 — a decision, not a shortcut.');
