@@ -1,0 +1,49 @@
+{
+  "schema": "cachepal-pack-v1",
+  "id": 26,
+  "key": "tallymite",
+  "name": "Tallymite",
+  "description": "Tallymite walks every surface it can reach, in order, once each, and marks off what it has covered. It has no interest in what any of it was, only in whether it has been there yet. Nothing it finds is ever kept. Everything it finds is written down.",
+  "credit": "Cache Pal Studio",
+  "baseColor": "#7C8FC4",
+  "shinyColor": "#B7F0A8",
+  "bodyArchetype": "crawler",
+  "statBias": [
+    0,
+    -3,
+    -1,
+    5,
+    -2,
+    5
+  ],
+  "hungryFor": "unswept corners",
+  "needDecayBias": [
+    0.8,
+    0.9,
+    1.25,
+    1.15,
+    1.25
+  ],
+  "babyDescription": "Sets out along the edge of things and will not be turned around.",
+  "teenDescription": "Has begun keeping count, and is very sure of the number.",
+  "adultDescription": "Will finish the sweep. It has always finished the sweep.",
+  "feature": [
+    "................",
+    "................",
+    ".........A......",
+    ".........A......",
+    "................",
+    "................",
+    "........S.S.S...",
+    "........S.S.S...",
+    "........S.S.S...",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................"
+  ],
+  "weight": 44
+}
