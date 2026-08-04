@@ -5,7 +5,7 @@
   "name": "Loamcap",
   "description": "It came up in the dark under a hollow log and has not hurried since. Loamcap hears the ground the way other creatures hear a room — rain three fields off, a mole going home, the particular crunch of somebody trying not to wake anyone. It will know what tomorrow is doing before tonight is over, and it will not mention it.",
   "credit": "Cache Pal Studio",
-  "baseColor": "#9A6B45",
+  "baseColor": "#906542",
   "shinyColor": "#A8F0C0",
   "bodyArchetype": "bloom",
   "statBias": [
@@ -45,5 +45,12 @@
     "................",
     "................"
   ],
-  "weight": 58
+  "weight": 58,
+  "history": [
+    {
+      "date": "2026-08-04",
+      "change": "palette: baseColor #9A6B45 -> #906542, clearing wickroot at dE00 8.3 — three lanes independently reached for an earthy brown. W64-ROSTER wants dE00 >= 10 between any two species; this is the smallest move that clears 11 against all 31 others.",
+      "by": "operator"
+    }
+  ]
 }

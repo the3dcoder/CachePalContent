@@ -73,7 +73,20 @@ const LEGEND = new Set(['.', 'O', 'B', 'S', 'A', 'E', 'W', 'M', 'C', '#']);
 // Custom body grids use the composer ROLE alphabet (SpeciesSubmission.AllowedChars
 // in the game — X = feature role, no '#'). Distinct from the v1 feature LEGEND.
 const GRID_LEGEND = new Set([...'.ABCEMOSWX']);
-const ARCHETYPES = new Set(['blob', 'quad', 'wisp', 'shell', 'fish', 'avian', 'biped', 'jelly', 'serpent']);
+// The ELEVEN body archetypes the shipped client knows. `bloom` and `crawler` arrived with B25 in
+// game release v1.25.0 (2026-07-26) and this list was not updated with them, so for nine days the
+// content tooling refused two body plans the game had been drawing perfectly well — B340. Adding
+// them is safe only because v1.25.0 is confirmed as the floor build in the wild: an archetype this
+// list allows but a client does not know makes `TryRegisterPack` drop the WHOLE PACK, leaving every
+// Pal of that species a dormant mystery egg rather than falling back to a body.
+//
+// So this constant is not a preference — it is a claim about what is installed on real devices, and
+// it may only grow after a release carrying the new archetype is the floor. `pack-agreement.mjs`
+// now holds it from the other side (B341): it asserts palpack ACCEPTS every archetype the client
+// knows, which is the direction that was missing when this drifted.
+const ARCHETYPES = new Set([
+  'blob', 'quad', 'wisp', 'shell', 'fish', 'avian', 'biped', 'jelly', 'serpent', 'bloom', 'crawler',
+]);
 const BUILTIN_MAX_ID = 13; // ids 0-13 are compiled into the app — never here
 // The live channel, same casing as the client's compiled ContentSyncService.DefaultBaseUrl
 // (GitHub Pages project paths are case-sensitive; this casing is the verified-working one).

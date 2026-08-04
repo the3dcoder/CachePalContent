@@ -3,7 +3,7 @@
   "id": 22,
   "key": "blinkbell",
   "name": "Blinkbell",
-  "description": "Blinkbell hangs in the middle of an empty ceiling and keeps watch over a room where nothing has happened for nine years. It is proud of every single one of them. Once, at about three in the morning, it became convinced that something was happening; it was wrong, it was extremely serious about it, and it apologised to the whole house afterwards.",
+  "description": "Blinkbell hangs in the middle of an empty ceiling and keeps watch over a room where nothing has happened for nine years. It is proud of every single one of them.",
   "credit": "Cache Pal Studio",
   "baseColor": "#D4506B",
   "shinyColor": "#5ED0A8",
@@ -45,5 +45,12 @@
     "................",
     "................"
   ],
-  "weight": 44
+  "weight": 44,
+  "history": [
+    {
+      "date": "2026-08-04",
+      "change": "lore: cut the 3am false-alarm sentence (owner call) — the one line in the batch funny at the creature's expense; it read as a smoke-alarm gag rather than a portrait",
+      "by": "operator"
+    }
+  ]
 }

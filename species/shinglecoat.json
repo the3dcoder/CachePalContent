@@ -5,7 +5,7 @@
   "name": "Shinglecoat",
   "description": "Shinglecoat carries its whole life on its back: grit, a fleck of shell, a chip of something blue that was probably a plate. It adds one piece at a time and never takes anything off again. Ask where any particular piece came from and you get the same slow blink you would get for any other question.",
   "credit": "Cache Pal Studio",
-  "baseColor": "#AE9679",
+  "baseColor": "#B39D7E",
   "shinyColor": "#7FC79A",
   "bodyArchetype": "crawler",
   "statBias": [
@@ -45,5 +45,12 @@
     "................",
     "................"
   ],
-  "weight": 46
+  "weight": 46,
+  "history": [
+    {
+      "date": "2026-08-04",
+      "change": "palette: baseColor #AE9679 -> #B39D7E, clearing wickroot at dE00 9.8. W64-ROSTER wants dE00 >= 10 between any two species; this is the smallest move that clears 11 against all 31 others.",
+      "by": "operator"
+    }
+  ]
 }
