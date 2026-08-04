@@ -1,0 +1,49 @@
+{
+  "schema": "cachepal-pack-v1",
+  "id": 31,
+  "key": "palisade",
+  "name": "Palisade",
+  "description": "It was set down to mark where one field ended and the next began, and then the fence moved and nobody told it. Palisade still walks the old line exactly — the same corner, the same twelve paces, the same slight bend around a tree that is no longer there. It is very precise about a boundary that stopped existing some years ago, and it has never once been late.",
+  "credit": "Cache Pal Studio",
+  "baseColor": "#3E6E78",
+  "shinyColor": "#FFB300",
+  "bodyArchetype": "shell",
+  "statBias": [
+    2,
+    -3,
+    -1,
+    5,
+    0,
+    4
+  ],
+  "hungryFor": "fence nails",
+  "needDecayBias": [
+    1.0,
+    1.1,
+    0.9,
+    0.7,
+    1.1
+  ],
+  "babyDescription": "A small blank case with nothing to mark yet, waiting to be set down somewhere.",
+  "teenDescription": "The posts are up along its back and the lamp is lit. Counts its own paces, and corrects itself near the corner every time.",
+  "adultDescription": "A walking fence keeping a line the field forgot, to the pace.",
+  "feature": [
+    "................",
+    "................",
+    "......A.A.A.....",
+    "......A.W.A.....",
+    "......AAAAA.....",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................"
+  ],
+  "weight": 38
+}
