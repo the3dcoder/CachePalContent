@@ -15,11 +15,14 @@ Each carries hand-finished baby/teen/adult grids (drafted by `tools/sprite-draft
 DCSS rltiles and the owner's own bestiary art, finished by hand — provenance in every source
 file's `credit`), lore, stat and need biases, and a premiere DNA minted by `FreezeHarness mint`.
 
-**Playground scenes** — `backgrounds/backgrounds-cc55292a.json` replaces the single-scene file:
+**Playground scenes** — `backgrounds/backgrounds-9816c8dd.json` replaces the single-scene file:
 Lantern Thicket (unchanged, 🪙900), **Peat Hollow** (🪙900), **Porchlight Lane** (🪙900),
-**Honeydawn Field** (🪙900 — proposed at 800, raised to the rulebook's floor, which is
-900-or-free). A republish is a wholesale replace, so the three arrive and Lantern Thicket keeps
-its price and its owners.
+**Honeydawn Field** (**free**). Honeydawn was proposed at 800, which the rulebook refuses — v1
+prices are free or at-or-above 900, so that eight Pals never undercut one — and the owner took
+the free branch rather than the floor. It is the first free scene the CHANNEL has carried
+(Meadow is free but compiled), so a keeper with no coins can still change where their Pals
+live. A republish is a wholesale replace, so the three arrive and Lantern Thicket keeps its
+price and its owners.
 
 Client requirement met: v2.21.0 (live on both origins, verified 2026-08-21) understands every
 channel this drop uses — the backgrounds channel has shipped since v1.33.
