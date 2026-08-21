@@ -1,5 +1,29 @@
 # Content drops
 
+## Generation 11 — STAGED, unsigned · drop 2026-W34 ("The Guidlands Wave")
+
+**Staged 2026-08-21 and waiting on the signing ceremony.** Four species and three Playground
+scenes, drawn from the owner's asset drive (`the3dcoder/guidlands`) through the repo's own
+pipelines — the first drop whose art starts outside this project.
+
+**Pondwink** (`pondwink`, id 32, Tide, quad) — a frog that is never quite where you saw it.
+**Humblebee** (`humblebee`, id 33, Bloom, wisp) — modest ambitions, immaculate manners.
+**Duskmoth** (`duskmoth`, id 34, Mist, wisp) — stitched from the last ten minutes of evening.
+**Peatling** (`peatling`, id 35, Bloom, shell) — a small hill that got up.
+
+Each carries hand-finished baby/teen/adult grids (drafted by `tools/sprite-draft.mjs` from CC0
+DCSS rltiles and the owner's own bestiary art, finished by hand — provenance in every source
+file's `credit`), lore, stat and need biases, and a premiere DNA minted by `FreezeHarness mint`.
+
+**Playground scenes** — `backgrounds/backgrounds-cc55292a.json` replaces the single-scene file:
+Lantern Thicket (unchanged, 🪙900), **Peat Hollow** (🪙900), **Porchlight Lane** (🪙900),
+**Honeydawn Field** (🪙900 — proposed at 800, raised to the rulebook's floor, which is
+900-or-free). A republish is a wholesale replace, so the three arrive and Lantern Thicket keeps
+its price and its owners.
+
+Client requirement met: v2.21.0 (live on both origins, verified 2026-08-21) understands every
+channel this drop uses — the backgrounds channel has shipped since v1.33.
+
 ## Generation 9 — 2026-07-29 · Drop 2026-W31 ("Two Small Comforts")
 
 A wardrobe-only drop, and the first publish under B205's guards.

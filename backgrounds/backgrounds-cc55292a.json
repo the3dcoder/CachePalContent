@@ -1,0 +1,97 @@
+{
+  "schema": "cachepal-backgrounds-v1",
+  "backgrounds": [
+    {
+      "key": "lantern-thicket",
+      "name": "Lantern Thicket",
+      "blurb": "Paper lanterns against the dusk. The fireflies came to see.",
+      "price": 900,
+      "floorTopY": 71,
+      "floorBottomY": 85,
+      "restSpots": [
+        {
+          "x": 26,
+          "y": 79
+        },
+        {
+          "x": 63,
+          "y": 83
+        },
+        {
+          "x": 99,
+          "y": 76
+        }
+      ],
+      "artPng": "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"
+    },
+    {
+      "key": "peat-hollow",
+      "name": "Peat Hollow",
+      "blurb": "A bog older than the garden, holding the last of the light.",
+      "price": 900,
+      "floorTopY": 71,
+      "floorBottomY": 85,
+      "restSpots": [
+        {
+          "x": 24,
+          "y": 78
+        },
+        {
+          "x": 61,
+          "y": 83
+        },
+        {
+          "x": 97,
+          "y": 76
+        }
+      ],
+      "artPng": "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"
+    },
+    {
+      "key": "porchlight-lane",
+      "name": "Porchlight Lane",
+      "blurb": "The village is asleep. The lamp is not.",
+      "price": 900,
+      "floorTopY": 71,
+      "floorBottomY": 85,
+      "restSpots": [
+        {
+          "x": 28,
+          "y": 79
+        },
+        {
+          "x": 64,
+          "y": 83
+        },
+        {
+          "x": 100,
+          "y": 76
+        }
+      ],
+      "artPng": "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"
+    },
+    {
+      "key": "honeydawn-field",
+      "name": "Honeydawn Field",
+      "blurb": "Ten minutes before sunrise, and the pollen is already up.",
+      "price": 900,
+      "floorTopY": 70,
+      "floorBottomY": 85,
+      "restSpots": [
+        {
+          "x": 25,
+          "y": 77
+        },
+        {
+          "x": 60,
+          "y": 82
+        },
+        {
+          "x": 98,
+          "y": 74
+        }
+      ],
+      "artPng": "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"
+    }
+  ]
+}
