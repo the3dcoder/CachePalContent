@@ -1,5 +1,16 @@
 # Content drops
 
+## Generation 13 — the recolour (2026-08-22, same day as 12)
+
+`W64`'s colour clauses caught all three generation-12 species on the first full-suite run
+against the merged content: Hucklebear 4.1 dE00 from Loamcap, Gloamgecko 7.2 from Mossbyte,
+Ripplechub 8.5 from Puddlejack — plus a genome-reachable crossing (a hue-shifted Pilotwire
+minting a Pal that reads as Ripplechub at 1.3 dE00). The same class generation 10 recoloured
+seven species for. Fixed pack-side and republished within the hour: Hucklebear `#8A2E42`
+deep berry-wine, Gloamgecko `#445C51` dark dusk-moss, Ripplechub `#A83D8F` magenta koi with
+a seafoam shiny. The last pairing was solved structurally — hue rotation preserves lightness,
+so the wine at L≈33 cannot meet the magenta at any rotation. Full suite green at publish.
+
 ## Generation 12 — PUBLISHED (2026-08-22, signed from Key Vault custody)
 
 Three species from the guidlands intake's CC0 tier (DCSS rltiles, `dcss-mon/animals/` —
