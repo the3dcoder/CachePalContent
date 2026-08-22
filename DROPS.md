@@ -1,5 +1,41 @@
 # Content drops
 
+## Generation 11 — STAGED, unsigned · drop 2026-W34 ("The Guidlands Wave")
+
+**Staged 2026-08-21 and waiting on the signing ceremony.** THREE species and three Playground
+scenes, drawn from the owner's asset drive (`the3dcoder/guidlands`) through the repo's own
+pipelines — the first drop whose art starts outside this project.
+
+**Pondwink** (`pondwink`, id 32, Tide, quad) — a frog that is never quite where you saw it.
+**Humblebee** (`humblebee`, id 33, Bloom, wisp) — modest ambitions, immaculate manners.
+**Duskmoth** (`duskmoth`, id 34, Mist, wisp) — stitched from the last ten minutes of evening.
+
+**A FOURTH WAS STAGED AND PULLED, and id 35 is deliberately left unspent.** Peatling was drafted
+from `bog_troll.png` under the guidlands repo's `client/public/assets/bestiary/`, and carried a
+credit line calling that art owner-produced. It is not: that repo's own `credits.txt` files the
+**Admurin Mega Pack** under *PURCHASED (commercial licence)* covering "every per-species sheet
+under `bestiary/`", and `scripts/bake_bestiary.py` names exactly three drawn exceptions —
+`mud_crab`, `giant_toad`, `zombie` — none of them this one. The pack's terms are not on the
+drive, and a signed drop REDISTRIBUTES art rather than merely using it in a build, which is
+where pack terms most often differ. The owner pulled it rather than publish a provenance
+question. The draft stays in the app repo marked HOLD; nothing here claims id 35.
+
+Each of the three carries hand-finished baby/teen/adult grids (drafted by `tools/sprite-draft.mjs`
+from CC0 DCSS rltiles, finished by hand — provenance in every source file's `credit`), lore, stat
+and need biases, and a premiere DNA minted by `FreezeHarness mint`.
+
+**Playground scenes** — `backgrounds/backgrounds-9816c8dd.json` replaces the single-scene file:
+Lantern Thicket (unchanged, 🪙900), **Peat Hollow** (🪙900), **Porchlight Lane** (🪙900),
+**Honeydawn Field** (**free**). Honeydawn was proposed at 800, which the rulebook refuses — v1
+prices are free or at-or-above 900, so that eight Pals never undercut one — and the owner took
+the free branch rather than the floor. It is the first free scene the CHANNEL has carried
+(Meadow is free but compiled), so a keeper with no coins can still change where their Pals
+live. A republish is a wholesale replace, so the three arrive and Lantern Thicket keeps its
+price and its owners.
+
+Client requirement met: v2.21.0 (live on both origins, verified 2026-08-21) understands every
+channel this drop uses — the backgrounds channel has shipped since v1.33.
+
 ## Generation 9 — 2026-07-29 · Drop 2026-W31 ("Two Small Comforts")
 
 A wardrobe-only drop, and the first publish under B205's guards.
