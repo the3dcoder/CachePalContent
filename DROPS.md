@@ -1,5 +1,27 @@
 # Content drops
 
+## Generation 12 — STAGED, NOT SIGNED (branch `staged/gen12`, 2026-08-22)
+
+Three species from the guidlands intake's CC0 tier (DCSS rltiles, `dcss-mon/animals/` —
+licence quoted from the drive's own `credits.txt`: *"COURTESY (CC0, no credit required)"*),
+drafted by `sprite-draft.mjs` in wave 58's batch and hand-finished in wave 59: all three
+stage grids authored per species, eyes deliberate (E iris + W white), premiere DNA minted
+by FreezeHarness, `palpack validate` green at 24 species.
+
+| id | key | name | archetype | element | premiere seed |
+|---|---|---|---|---|---|
+| 36 | hucklebear | Hucklebear | quad | Bloom | the thicket kept one sweet |
+| 37 | gloamgecko | Gloamgecko | crawler | Mist | the wall was warm all night |
+| 38 | ripplechub | Ripplechub | fish | Tide | the jetty saved a crumb |
+
+**Id 35 stays unspent** — it is the record of the pulled Peatling (generation 11's
+provenance question), and spending it would erase what the gap remembers.
+
+Staged on a branch rather than main so the checkout keeps agreeing with the live registry
+(generation 11, 21 species) and `W64` stays green — the wave-58 staging sat on main and
+turned that gate red for a day. To publish: merge this branch, then the standard
+`palpack publish` with the Key Vault key.
+
 ## Generation 11 — STAGED, unsigned · drop 2026-W34 ("The Guidlands Wave")
 
 **Staged 2026-08-21 and waiting on the signing ceremony.** THREE species and three Playground
