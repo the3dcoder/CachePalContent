@@ -1,6 +1,6 @@
 # Content drops
 
-## Generation 12 — STAGED, NOT SIGNED (branch `staged/gen12`, 2026-08-22)
+## Generation 12 — PUBLISHED (2026-08-22, signed from Key Vault custody)
 
 Three species from the guidlands intake's CC0 tier (DCSS rltiles, `dcss-mon/animals/` —
 licence quoted from the drive's own `credits.txt`: *"COURTESY (CC0, no credit required)"*),
@@ -17,10 +17,10 @@ by FreezeHarness, `palpack validate` green at 24 species.
 **Id 35 stays unspent** — it is the record of the pulled Peatling (generation 11's
 provenance question), and spending it would erase what the gap remembers.
 
-Staged on a branch rather than main so the checkout keeps agreeing with the live registry
-(generation 11, 21 species) and `W64` stays green — the wave-58 staging sat on main and
-turned that gate red for a day. To publish: merge this branch, then the standard
-`palpack publish` with the Key Vault key.
+Published the same day on the owner's word: merged from `staged/gen12`, the vault key
+derive-checked against the pinned public half before signing, generation 12 signed and
+verified (clears the current key, refused by the retired one), live on the CDN within a
+minute, and a fresh browser profile on the live game cached generation 12 end to end.
 
 ## Generation 11 — STAGED, unsigned · drop 2026-W34 ("The Guidlands Wave")
 
