@@ -1,30 +1,24 @@
 #!/usr/bin/env bash
-# Publish a content drop. One command, one number.
+# Publish a content drop. Run by the agent, not by a person.
 #
 #   ./tools/publish-drop.sh 21
 #
-# WHAT THIS REPLACES. Publishing used to mean exporting the private key into your shell,
-# looking up the commit, remembering three environment variables, running the tool, committing
-# the output, pushing, and then checking the CDN by hand. Every step except the number was
-# incidental — and typing the key each time was the worst of them, because a private key ends up
-# in shell history on whichever machine happened to be nearby.
+# WHO RUNS THIS. Not the owner. Publishing is meant to be something you ask for — "publish
+# generation 11" — and not a procedure you carry out. The signing key lives in the environment's
+# configured variables, so every agent session already has it and the publish is just work like
+# any other. If you are a person reading this because something went wrong, the whole thing is
+# `node tools/palpack.mjs publish` with three environment variables; everything below is guards.
 #
-# THE KEY IS READ FROM A FILE, ONCE, AND NEVER TYPED AGAIN. Put it at ~/.cachepal/signing.key
-# (or point PALPACK_KEY_FILE somewhere else):
+# WHERE THE KEY COMES FROM. `PALPACK_KEY`, out of the environment. Set once in the Claude Code
+# environment settings and never again — not in this repo, not in a shell, not in a CI service.
+# The fallback file path below exists only so a hand-run on a laptop still works; it is not the
+# intended route and nobody should need it.
 #
-#     mkdir -p ~/.cachepal && chmod 700 ~/.cachepal
-#     printf '%s' '<the private base64url value>' > ~/.cachepal/signing.key
-#     chmod 600 ~/.cachepal/signing.key
-#
-# It lives outside the repo, so it cannot be committed by accident, and this script never prints
-# it. If PALPACK_KEY is already exported this respects it and says so.
-#
-# WHY YOU STILL TYPE THE COUNT, and it is the only thing you type. Everything else is derived —
-# the commit from git, the branch from where you are, the previous generation off the live
-# channel. The count is yours because generation 10's first attempt signed a SIX-species tree
-# while eighteen were being published (B350). The only thing that catches that is a person saying
-# what they meant and the machine disagreeing; a count this script read off the tree would be the
-# tree checking itself, which catches nothing.
+# WHY YOU STILL PASS THE COUNT. It is the one argument, and it is the check. Generation 10's
+# first attempt signed a SIX-species tree while eighteen were being published (B350). The only
+# thing that catches that is somebody stating what they meant and the machine disagreeing; a
+# count this script read off the tree would be the tree checking itself, which catches nothing.
+# The agent takes the number from whoever asked for the drop.
 set -euo pipefail
 
 cd "$(dirname "$0")/.."
@@ -49,11 +43,10 @@ else
   KEY_FILE="${PALPACK_KEY_FILE:-$HOME/.cachepal/signing.key}"
   [ -f "$KEY_FILE" ] || die "No signing key.
 
-    mkdir -p ~/.cachepal && chmod 700 ~/.cachepal
-    printf '%s' '<private base64url value>' > $KEY_FILE
-    chmod 600 $KEY_FILE
+PALPACK_KEY is not in the environment. It belongs in the Claude Code environment settings,
+set once, so every session has it and publishing needs nobody to fetch anything.
 
-Store it once and this script never asks again."
+(A file at $KEY_FILE also works, but that is the laptop fallback, not the route.)"
   # A key any local process can read is a key worth re-storing. Warn, do not refuse: a wrong
   # mode is a housekeeping problem, and refusing to publish over it would be this script
   # inventing a ceremony of its own.
