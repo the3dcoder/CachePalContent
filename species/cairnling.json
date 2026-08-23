@@ -1,0 +1,49 @@
+{
+  "schema": "cachepal-pack-v1",
+  "id": 39,
+  "key": "cairnling",
+  "name": "Cairnling",
+  "description": "Cairnling is a waymark that got tired of pointing one way. Somebody stacked it with care a long time ago and the care took: now it trundles from trailhead to trailhead, settling wherever walkers look lost and radiating quiet certainty in no particular direction. The warm stone in the middle has never gone out. It is very proud of this, and will show you at dusk if you stand still long enough to be worth showing.",
+  "credit": "Cache Pal Studio",
+  "baseColor": "#7E7A6E",
+  "shinyColor": "#5EBC2F",
+  "bodyArchetype": "shell",
+  "statBias": [
+    2,
+    -2,
+    -1,
+    3,
+    1,
+    0
+  ],
+  "hungryFor": "sun-warmed gravel",
+  "needDecayBias": [
+    0.7,
+    0.85,
+    0.8,
+    0.75,
+    1.25
+  ],
+  "babyDescription": "A pebble on a pebble. That is the whole creature, and it is extremely pleased with the arrangement.",
+  "teenDescription": "Three stones now, and opinions about which order they go in. Re-stacks itself at night when it thinks nobody is watching.",
+  "adultDescription": "Five weathered stones and one warm one, stacked the way somebody kind once meant. Leans toward lost walkers.",
+  "feature": [
+    "................",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................",
+    "......BBBBB.....",
+    ".....SSBSSBB....",
+    ".........WW.....",
+    ".........SS.....",
+    "......SS.SS.S...",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................"
+  ],
+  "weight": 48
+}

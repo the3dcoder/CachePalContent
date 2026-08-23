@@ -1,5 +1,34 @@
 # Content drops
 
+## Generation 15 — the gap-filling trio (2026-08-23)
+
+Three studio-authored species against the roster survey's thinnest lanes — the shell,
+bloom and jelly archetypes each had one resident or none among the packs, and Neon and
+Alloy were one-member elements. All three are v1 sparse-feature species (the Wickroot
+pattern — an overlay on the archetype body, no custom grids), authored against a
+safe-cell map intersected across teen/adult/elder **and both animation frames**, because
+a feature cell replaces blindly and the teen and elder grids carry their banding in
+different cells than the adult (Cairnling's overlay plugs all three stages' accent
+cells; the first draft left teen pink at (7,10) and elder at (6,7)/(6,9)).
+
+| id | key | name | archetype | base | shiny |
+|---|---|---|---|---|---|
+| 39 | cairnling | Cairnling | shell | `#7E7A6E` stone | `#5EBC2F` overgrown moss |
+| 40 | trundlecap | Trundlecap | bloom | `#C1443C` amanita | `#702BCA` twilight violet |
+| 41 | bottlestorm | Bottlestorm | jelly | `#C82FEE` plasma violet | `#0D7CF2` clear-sky blue |
+
+**Bottlestorm was drafted `#3D7BFF` storm-blue and W64's gene sweep refused it** — a
+−24° hue-shifted genome lands dE00 1.7 from canonical Bitto, generation 13's own defect
+class, caught pre-publish this time by running the merged suite first. The whole hue
+wheel was then swept under the same bar (±30° both directions vs every canonical, 2.3
+floor, 10.0 pairwise): the only open regions at body-legible lightness are electric
+violet and lime. The storm went violet — plasma reads more Neon than sky ever did — and
+the refused blue survives as the shiny. Final clearances: Cairnling 12.1, Trundlecap
+5.1, Bottlestorm 11.1 against the worst genome-reachable crossing; 12.0+ canonical.
+CIEDE2000 re-validated against W64's recorded 4.1 before any number was believed.
+
+**Id 35 stays unspent** — the Peatling record holds.
+
 ## Generation 14 — the regions channel's first drop (2026-08-23)
 
 24 tags-only entries against compiled regions — `island` / `coastal` / `alpine`, B191's own

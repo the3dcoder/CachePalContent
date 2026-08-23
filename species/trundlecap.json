@@ -1,0 +1,49 @@
+{
+  "schema": "cachepal-pack-v1",
+  "id": 40,
+  "key": "trundlecap",
+  "name": "Trundlecap",
+  "description": "Trundlecap came up overnight in the wrong place, the way the best mushrooms do. It walks its spots around the garden on a schedule nobody has decoded, bows to anything that bows back, and holds its cap over smaller creatures when it rains. The white spots are not painted on. They are earned, one good deed each — or so Trundlecap insists, and nobody has caught it doing a deed OR growing a spot, which it treats as proof.",
+  "credit": "Cache Pal Studio",
+  "baseColor": "#C1443C",
+  "shinyColor": "#702BCA",
+  "bodyArchetype": "bloom",
+  "statBias": [
+    -1,
+    1,
+    2,
+    2,
+    2,
+    -1
+  ],
+  "hungryFor": "morning drizzle",
+  "needDecayBias": [
+    0.9,
+    1.1,
+    0.85,
+    1.2,
+    0.9
+  ],
+  "babyDescription": "A damp button with one spot, already standing exactly where the path wanted to go.",
+  "teenDescription": "Cap-first through the fence, spots still counting themselves. Bows at everything, twice.",
+  "adultDescription": "Full-grown and freckled with good deeds, holding its cap over whoever forgot an umbrella.",
+  "feature": [
+    "................",
+    "................",
+    "......W..W......",
+    "....W..W...W....",
+    "...W............",
+    "............W...",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................"
+  ],
+  "weight": 56
+}
