@@ -211,7 +211,17 @@ function validateAll() {
     if (s.schema === 'cachepal-pack-v1' && gridStages.length > 0) {
       fail(ctx, 'custom grids require schema cachepal-pack-v2 (grid-less species stay v1 for old-client compat)');
     }
-    for (const stage of gridStages) {
+    // B475 — the OPTIONAL slots (the elder portrait and the four B-frames) are validated with
+    // the SAME structure and floors whenever present. This list was only the required trio
+    // until generation 16, which is exactly the hole the comment above warns about: the game
+    // drops ALL of a species' grids when any present grid is malformed, so an unvalidated
+    // gridElder could degrade a whole species to archetype art wearing a valid signature.
+    const optionalGrids = ['gridElder', 'gridBabyB', 'gridTeenB', 'gridAdultB', 'gridElderB']
+      .filter(g => s[g] !== undefined);
+    if (s.schema === 'cachepal-pack-v1' && optionalGrids.length > 0) {
+      fail(ctx, 'custom grids require schema cachepal-pack-v2 (grid-less species stay v1 for old-client compat)');
+    }
+    for (const stage of [...gridStages, ...optionalGrids]) {
       const grid = s[stage];
       if (!Array.isArray(grid) || grid.length !== 16) fail(ctx, `${stage} must be 16 rows`);
       let painted = 0, bodies = 0, outlines = 0;

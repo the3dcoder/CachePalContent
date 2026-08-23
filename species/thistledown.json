@@ -96,6 +96,29 @@
       "date": "2026-08-04",
       "change": "dex-edit: baseColor #D7CCE8 -> #B9B0C2, clearing prismite at 5.2 and driftjelly at 6.9. W64-ROSTER wants dE00 >= 10 between any two species and only ever measured the fourteen COMPILED ones, so no pack species had been checked against anything since the registry began (B343). Measured across the whole 32-species roster; this is the smallest move that clears 11 against all 31 others. Four pack species were moved rather than eight, because every colliding pair has a pack species in it and the compiled roster needs no change at all.",
       "by": "operator"
+    },
+    {
+      "date": "2026-08-23",
+      "change": "elder portrait added — the stoop: one row shorter, one row lower, feet planted (B475)",
+      "by": "Cache Pal Studio"
     }
+  ],
+  "gridElder": [
+    "................",
+    ".....SSSSS......",
+    "...SSSASASSS....",
+    "....SSSSSSS.....",
+    ".....OOOOO......",
+    "....OBBBBBO.....",
+    "...OBWEBBWEBO...",
+    "...OBBBBBBBBO...",
+    "...OBCBMMBCBO...",
+    "....OBBBBBO.....",
+    ".....OBBBO......",
+    "....OBBBBBO.....",
+    "...OBBSBBSBBO...",
+    "....SS.SS.SS....",
+    ".....S...S......",
+    "................"
   ]
 }

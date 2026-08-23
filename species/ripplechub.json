@@ -90,7 +90,30 @@
       "date": "2026-08-22",
       "change": "created (guidlands intake batch 2)",
       "by": "Cache Pal Studio"
+    },
+    {
+      "date": "2026-08-23",
+      "change": "elder portrait added — the stoop: one row shorter, one row lower, feet planted (B475)",
+      "by": "Cache Pal Studio"
     }
   ],
-  "premiereDna": "4b715ab1-0026-cadc-dd8d-efa8683efe9b"
+  "premiereDna": "4b715ab1-0026-cadc-dd8d-efa8683efe9b",
+  "gridElder": [
+    "................",
+    "....BBBXOO......",
+    "..OASBAASBXO....",
+    ".OAEWABABSBX....",
+    ".OBBBAABBAABOO..",
+    ".XBXXXBSABABXAX.",
+    "OXBXXXXBAXBXBBB.",
+    "OXBABBBXBXAABO..",
+    "OBBSSBABBBASAO..",
+    ".XBBBBABXBSABO..",
+    ".OBBASBABBBAX...",
+    "..XXBBBBXASBOO..",
+    ".OABXBBXXBBO.OO.",
+    "..X.OOBBXXO..OO.",
+    "....OOOXO..OO...",
+    "......OOOOO....."
+  ]
 }

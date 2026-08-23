@@ -1,5 +1,28 @@
 # Content drops
 
+## Generation 16 — the elders' drop (2026-08-23)
+
+No new species — the ones already here got their old age. All eleven full-grid species
+(15 thistledown, 16 puddlejack, 17 glowtail, 18 latchback, 19 hushwing, 32 pondwink,
+33 humblebee, 34 duskmoth, 36 hucklebear, 37 gloamgecko, 38 ripplechub) gain a `gridElder`:
+until now every one of them rendered its unchanged adult art at the stage the game's
+emotional payoff lands on, because the client's designed fallback (`GridElder ?? GridAdult`)
+had never been fed. The stoop follows the archetype elders' own recipe (B211/B212, W95):
+one row shorter, one row lower, feet planted — drafted by removing each adult's most
+vertically-redundant upper row (face rows protected), then reviewed sprite by sprite
+against the real composer. Each pack's `history` records the change.
+
+**The drop also closed a fence hole found on the way in**: `palpack validate` swept only
+the required trio (`gridBaby/Teen/Adult`), so a malformed `gridElder` would have signed
+clean and then triggered the client's degrade-whole-species rule wearing a valid
+signature. The optional slots (elder + the four B-frames) are validated with the same
+structure and floors whenever present — this generation is the rule's first real workload.
+
+**Still open, recorded**: the eleven carry no second animation frame (`gridAdultB` and
+kin), so they render still while archetype-composed species breathe. Forty-four grids of
+authored animation is its own drop, not a rider on this one.
+
+
 ## Generation 15 — the gap-filling trio (2026-08-23)
 
 Three studio-authored species against the roster survey's thinnest lanes — the shell,

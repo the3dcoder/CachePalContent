@@ -91,6 +91,29 @@
       "date": "2026-08-21",
       "change": "created (guidlands intake batch 1)",
       "by": "Cache Pal Studio"
+    },
+    {
+      "date": "2026-08-23",
+      "change": "elder portrait added — the stoop: one row shorter, one row lower, feet planted (B475)",
+      "by": "Cache Pal Studio"
     }
+  ],
+  "gridElder": [
+    "................",
+    "................",
+    "................",
+    ".............XX.",
+    "...........XXXXX",
+    "XXX..SSS..AAXXXX",
+    "XXBXBEWBS.BBSXX.",
+    "XABBAAAABXSA....",
+    "...BAAABBABBBS..",
+    "....ABAAAABABX..",
+    ".....ABAAAB.X...",
+    "......B.AAA.....",
+    "..OOO....A.OO...",
+    "..OOOOOOOOOOOO..",
+    "...OOOOOOOOOOO..",
+    ".......OOO......"
   ]
 }

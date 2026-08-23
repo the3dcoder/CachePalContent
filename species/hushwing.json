@@ -101,6 +101,11 @@
       "date": "2026-08-04",
       "change": "dex-edit: baseColor #8FA8BE -> #99B7DD, clearing echowl at 5.0 and latchback at 6.6 — the worst pair on the board, near the ~2.3 just-noticeable difference. W64-ROSTER wants dE00 >= 10 between any two species and only ever measured the fourteen COMPILED ones, so no pack species had been checked against anything since the registry began (B343). Measured across the whole 32-species roster; this is the smallest move that clears 11 against all 31 others. Four pack species were moved rather than eight, because every colliding pair has a pack species in it and the compiled roster needs no change at all.",
       "by": "operator"
+    },
+    {
+      "date": "2026-08-23",
+      "change": "elder portrait added — the stoop: one row shorter, one row lower, feet planted (B475)",
+      "by": "Cache Pal Studio"
     }
   ],
   "cosmetics": [
@@ -136,5 +141,23 @@
         "b": "#6B5B44"
       }
     }
+  ],
+  "gridElder": [
+    "................",
+    ".........SS.....",
+    "...OOOOOSS......",
+    "..OBWEBBO.......",
+    "AAABBCBBO.......",
+    "..AOBBBBO...OO..",
+    ".....OBBO..OXXO.",
+    "......OBBO.OXXXO",
+    "....OBBBBXXXXXO.",
+    "..OBBBBBBBBBBO..",
+    "..OBBBBBBXXXOSS.",
+    "...OBBBBBXXOSS..",
+    "....OOSSSSOO....",
+    "......S...S.....",
+    "......S...S.....",
+    "................"
   ]
 }
