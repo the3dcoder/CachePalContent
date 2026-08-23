@@ -101,6 +101,11 @@
       "date": "2026-08-23",
       "change": "elder portrait added — the stoop: one row shorter, one row lower, feet planted (B475)",
       "by": "Cache Pal Studio"
+    },
+    {
+      "date": "2026-08-23",
+      "change": "second animation frames for all four stages — the stance sway, the archetype B-frame idiom at species scale (B475 residue)",
+      "by": "Cache Pal Studio"
     }
   ],
   "gridElder": [
@@ -119,6 +124,78 @@
     "...OBBSBBSBBO...",
     "....SS.SS.SS....",
     ".....S...S......",
+    "................"
+  ],
+  "gridBabyB": [
+    "................",
+    "......SSS.......",
+    "....SSSSSSS.....",
+    "...SSSSSSSSS....",
+    "...SSSASSSSS....",
+    "....SSSSSSS.....",
+    "......SSS.......",
+    ".......S........",
+    ".......S........",
+    "......OOO.......",
+    ".....OBBBO......",
+    ".....OBEBO......",
+    ".....OBBBO......",
+    "....OBBBO.......",
+    ".......OOO......",
+    "................"
+  ],
+  "gridTeenB": [
+    "................",
+    "......SSSS......",
+    ".....SSSSSS.....",
+    "......SSSS......",
+    ".......SS.......",
+    ".....OOOOOO.....",
+    "....OBBBBBBO....",
+    "...OBWEBBWEBO...",
+    "..AOBCBBBBCBOA..",
+    "...OBBBMMBBBO...",
+    "...OBBBBBBBBO...",
+    "....OBBBBBBO....",
+    "....OOOOOO......",
+    ".....OO....OO...",
+    "................",
+    "................"
+  ],
+  "gridAdultB": [
+    ".....SSSSS......",
+    "....SSSSSSS.....",
+    "...SSSASASSS....",
+    "....SSSSSSS.....",
+    ".....OOOOO......",
+    "....OBBBBBO.....",
+    "...OBWEBBWEBO...",
+    "...OBBBBBBBBO...",
+    "...OBCBMMBCBO...",
+    "....OBBBBBO.....",
+    ".....OBBBO......",
+    "....OBBBBBO.....",
+    "...OBBSBBSBBO...",
+    "...SS.SS.SS.....",
+    "......S...S.....",
+    "................"
+  ],
+  "gridElderB": [
+    "................",
+    ".....SSSSS......",
+    "...SSSASASSS....",
+    "....SSSSSSS.....",
+    ".....OOOOO......",
+    "....OBBBBBO.....",
+    "...OBWEBBWEBO...",
+    "...OBBBBBBBBO...",
+    "...OBCBMMBCBO...",
+    "....OBBBBBO.....",
+    ".....OBBBO......",
+    "....OBBBBBO.....",
+    "...OBBSBBSBBO...",
+    "...SS.SS.SS.....",
+    "......S...S.....",
     "................"
   ]
 }

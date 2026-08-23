@@ -96,6 +96,11 @@
       "date": "2026-08-23",
       "change": "elder portrait added — the stoop: one row shorter, one row lower, feet planted (B475)",
       "by": "Cache Pal Studio"
+    },
+    {
+      "date": "2026-08-23",
+      "change": "second animation frames for all four stages — the stance sway, the archetype B-frame idiom at species scale (B475 residue)",
+      "by": "Cache Pal Studio"
     }
   ],
   "gridElder": [
@@ -115,5 +120,77 @@
     "..OOOOOOOOOOOO..",
     "...OOOOOOOOOOO..",
     ".......OOO......"
+  ],
+  "gridBabyB": [
+    "................",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................",
+    "..........XX....",
+    "...XBBEW.BBX....",
+    ".....BBBBBB.....",
+    "......BAABBB....",
+    "......BBAA......",
+    "....O...XO......",
+    "......OOOOOO....",
+    "................"
+  ],
+  "gridTeenB": [
+    "................",
+    "................",
+    "................",
+    "................",
+    "................",
+    "........S..XXXX.",
+    "..XX..EWS.BBBX..",
+    "..XBBAAAABBBX...",
+    "...BBABAABBBS...",
+    ".....BBBBXBBBB..",
+    ".....BBBBBBBX...",
+    "......BBBBB.....",
+    "....O....BB.....",
+    "..OOOOO..OOO....",
+    ".....OOOOOOOOO..",
+    "................"
+  ],
+  "gridAdultB": [
+    "................",
+    "................",
+    ".............XX.",
+    "...........XXXXX",
+    "XXX..SSS..AAXXXX",
+    "XXBXBEWBS.BBSXX.",
+    "XABBAAAABXSA....",
+    "...BAAABBABBBS..",
+    "....BSAAAXBASA..",
+    "....ABAAAABABX..",
+    ".....ABAAAB.X...",
+    "......B.AAA.....",
+    "..OOO....A.OO...",
+    "..OOOOOOOOOOOO..",
+    "..OOOOOOOOOOO...",
+    "........OOO....."
+  ],
+  "gridElderB": [
+    "................",
+    "................",
+    "................",
+    ".............XX.",
+    "...........XXXXX",
+    "XXX..SSS..AAXXXX",
+    "XXBXBEWBS.BBSXX.",
+    "XABBAAAABXSA....",
+    "...BAAABBABBBS..",
+    "....ABAAAABABX..",
+    ".....ABAAAB.X...",
+    "......B.AAA.....",
+    "..OOO....A.OO...",
+    "..OOOOOOOOOOOO..",
+    "..OOOOOOOOOOO...",
+    "........OOO....."
   ]
 }

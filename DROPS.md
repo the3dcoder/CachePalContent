@@ -1,5 +1,22 @@
 # Content drops
 
+## Generation 17 — the breathing drop (2026-08-23, same day as 16)
+
+Generation 16's recorded residue, paid the same day: all eleven full-grid species gain
+second animation frames for all four stages — 44 grids — so they finally breathe alongside
+the archetype-composed species instead of standing still. The pose is the archetype
+B-frames' own idiom, MEASURED before it was imitated: every one of the seven relevant
+archetypes changes 6–14 cells per frame, all in the bottom rows — feet slide a pixel, a
+wing-tip drops, a blob's base bulges — and the face never moves (the breath is the JS bob;
+the pose is the ground contact). The draft is a weight sway: the lowest painted row shifts
+one column, the row above shifts the other way, clamped at the sprite's own margins; every
+pair was then eye-checked through the real composer (44/44 animate, diffs 10–24 composed
+cells, no severed outlines). `gridElderB` is drafted from the ELDER grid, never the adult —
+a fallback there would make the old creature hop a full row between frames. Each pack's
+`history` records the change; `palpack validate`'s optional-slot sweep (added with
+generation 16) gets its first B-frame workload.
+
+
 ## Generation 16 — the elders' drop (2026-08-23)
 
 No new species — the ones already here got their old age. All eleven full-grid species
