@@ -1,0 +1,236 @@
+{
+  "schema": "cachepal-regions-v1",
+  "regions": [
+    {
+      "key": "is",
+      "name": "",
+      "areaKm2": 0,
+      "populationThousands": 0,
+      "tags": [
+        "island",
+        "coastal"
+      ]
+    },
+    {
+      "key": "ie",
+      "name": "",
+      "areaKm2": 0,
+      "populationThousands": 0,
+      "tags": [
+        "island",
+        "coastal"
+      ]
+    },
+    {
+      "key": "jp",
+      "name": "",
+      "areaKm2": 0,
+      "populationThousands": 0,
+      "tags": [
+        "island",
+        "coastal"
+      ]
+    },
+    {
+      "key": "ph",
+      "name": "",
+      "areaKm2": 0,
+      "populationThousands": 0,
+      "tags": [
+        "island",
+        "coastal"
+      ]
+    },
+    {
+      "key": "id",
+      "name": "",
+      "areaKm2": 0,
+      "populationThousands": 0,
+      "tags": [
+        "island",
+        "coastal"
+      ]
+    },
+    {
+      "key": "nz",
+      "name": "",
+      "areaKm2": 0,
+      "populationThousands": 0,
+      "tags": [
+        "island",
+        "alpine"
+      ]
+    },
+    {
+      "key": "us-hi",
+      "name": "",
+      "areaKm2": 0,
+      "populationThousands": 0,
+      "tags": [
+        "island",
+        "coastal"
+      ]
+    },
+    {
+      "key": "gb-sct",
+      "name": "",
+      "areaKm2": 0,
+      "populationThousands": 0,
+      "tags": [
+        "coastal",
+        "alpine"
+      ]
+    },
+    {
+      "key": "gb-wls",
+      "name": "",
+      "areaKm2": 0,
+      "populationThousands": 0,
+      "tags": [
+        "coastal"
+      ]
+    },
+    {
+      "key": "pt",
+      "name": "",
+      "areaKm2": 0,
+      "populationThousands": 0,
+      "tags": [
+        "coastal"
+      ]
+    },
+    {
+      "key": "gr",
+      "name": "",
+      "areaKm2": 0,
+      "populationThousands": 0,
+      "tags": [
+        "coastal",
+        "island"
+      ]
+    },
+    {
+      "key": "no",
+      "name": "",
+      "areaKm2": 0,
+      "populationThousands": 0,
+      "tags": [
+        "coastal",
+        "alpine"
+      ]
+    },
+    {
+      "key": "cl",
+      "name": "",
+      "areaKm2": 0,
+      "populationThousands": 0,
+      "tags": [
+        "coastal",
+        "alpine"
+      ]
+    },
+    {
+      "key": "pe",
+      "name": "",
+      "areaKm2": 0,
+      "populationThousands": 0,
+      "tags": [
+        "coastal",
+        "alpine"
+      ]
+    },
+    {
+      "key": "ch",
+      "name": "",
+      "areaKm2": 0,
+      "populationThousands": 0,
+      "tags": [
+        "alpine"
+      ]
+    },
+    {
+      "key": "at",
+      "name": "",
+      "areaKm2": 0,
+      "populationThousands": 0,
+      "tags": [
+        "alpine"
+      ]
+    },
+    {
+      "key": "us-ak",
+      "name": "",
+      "areaKm2": 0,
+      "populationThousands": 0,
+      "tags": [
+        "coastal",
+        "alpine"
+      ]
+    },
+    {
+      "key": "ca-w",
+      "name": "",
+      "areaKm2": 0,
+      "populationThousands": 0,
+      "tags": [
+        "coastal",
+        "alpine"
+      ]
+    },
+    {
+      "key": "ca-atl",
+      "name": "",
+      "areaKm2": 0,
+      "populationThousands": 0,
+      "tags": [
+        "coastal"
+      ]
+    },
+    {
+      "key": "us-ne",
+      "name": "",
+      "areaKm2": 0,
+      "populationThousands": 0,
+      "tags": [
+        "coastal"
+      ]
+    },
+    {
+      "key": "us-nw",
+      "name": "",
+      "areaKm2": 0,
+      "populationThousands": 0,
+      "tags": [
+        "coastal",
+        "alpine"
+      ]
+    },
+    {
+      "key": "br-ne",
+      "name": "",
+      "areaKm2": 0,
+      "populationThousands": 0,
+      "tags": [
+        "coastal"
+      ]
+    },
+    {
+      "key": "za",
+      "name": "",
+      "areaKm2": 0,
+      "populationThousands": 0,
+      "tags": [
+        "coastal"
+      ]
+    },
+    {
+      "key": "vn",
+      "name": "",
+      "areaKm2": 0,
+      "populationThousands": 0,
+      "tags": [
+        "coastal"
+      ]
+    }
+  ]
+}

@@ -132,6 +132,7 @@ if (cmd === 'new') scaffold(process.argv[3], Number(process.argv[4]));
 else if (cmd === 'validate') {
   const { species, wardrobe } = validateAll();
   console.log(`✔ all valid — ${species.length} species, ${wardrobe.length} wardrobe piece(s)`);
+  { const r = validateRegionsCurrent(); if (r) console.log(`  regions: ${r.count} entr${r.count === 1 ? 'y' : 'ies'} in ${r.name} (structurally valid; the shipped catalogue owns admission)`); }
 }
 else if (cmd === 'publish') await publish(); // async: the freshness gate reads the live channel
 else if (cmd === 'delist') delist(process.argv[3], process.argv.slice(4).join(' '));
@@ -413,6 +414,54 @@ function assertPinnedTree(speciesCount, when) {
   }
 }
 
+
+// B469 — the regions channel's content half (`cachepal-regions-v1`), which never existed: the
+// client shipped fetch→verify→register→render in wave 57 and this file had no publisher, so
+// four `channel-verify` clauses sat red across generations 10-13. STRUCTURAL validation only,
+// on purpose: the shipped catalogue owns admission (key durability, the privacy floors, the
+// compiled-key tags-only rule — `W80`/`W328` hold that seam), and a second copy of those rules
+// here would be the drift the whole repo refuses. What IS checked is what the catalogue cannot
+// see from one entry: the file parses as the schema the client pins, every key is well-formed
+// and DURABLE (2 letters, or contains '-' — B230's restore rule, restated here because a
+// non-durable key would strand a Pal's found-place on first restore), tags are lowercase words,
+// numbers are non-negative integers, and no key repeats.
+function validateRegionsCurrent() {
+  const cur = join(ROOT, 'regions', 'CURRENT');
+  if (!existsSync(cur)) return null; // shipping no regions is legal; the payload key is additive
+  const name = readFileSync(cur, 'utf8').trim();
+  if (!name) { console.error('regions/CURRENT is empty — name the live file or delete the pointer.'); process.exit(1); }
+  const path = join(ROOT, 'regions', name);
+  if (!existsSync(path)) { console.error(`regions/CURRENT names ${name}, which does not exist.`); process.exit(1); }
+  const bytes = readFileSync(path);
+  let content;
+  try { content = JSON.parse(bytes.toString('utf8')); }
+  catch { console.error(`regions/${name} is not JSON.`); process.exit(1); }
+  if (content.schema !== 'cachepal-regions-v1' || !Array.isArray(content.regions) || content.regions.length === 0) {
+    console.error(`regions/${name} is not a non-empty cachepal-regions-v1 file.`);
+    process.exit(1);
+  }
+  const seen = new Set();
+  for (const r of content.regions) {
+    const ctx = `regions/${name} entry ${JSON.stringify(r?.key ?? '?')}`;
+    if (!r || typeof r.key !== 'string' || !/^[a-z0-9][a-z0-9-]{0,22}[a-z0-9]$/.test(r.key)) {
+      console.error(`${ctx}: key must be lowercase [a-z0-9-], 2-24 chars, no edge dashes.`); process.exit(1);
+    }
+    if (!(r.key.length === 2 || r.key.includes('-'))) {
+      console.error(`${ctx}: key is not DURABLE (2 letters, or contains '-') — B230's restore rule.`); process.exit(1);
+    }
+    if (seen.has(r.key)) { console.error(`${ctx}: duplicate key.`); process.exit(1); }
+    seen.add(r.key);
+    if (typeof r.name !== 'string') { console.error(`${ctx}: name must be a string (empty is legal for tags-only).`); process.exit(1); }
+    for (const f of ['areaKm2', 'populationThousands']) {
+      if (!Number.isInteger(r[f]) || r[f] < 0) { console.error(`${ctx}: ${f} must be a non-negative integer.`); process.exit(1); }
+    }
+    if (!Array.isArray(r.tags) || r.tags.some(t => typeof t !== 'string' || !/^[a-z][a-z-]{1,15}$/.test(t))) {
+      console.error(`${ctx}: tags must be an array of lowercase words.`); process.exit(1);
+    }
+  }
+  return { name, path, bytes, content, count: content.regions.length };
+}
+
 async function publish() {
   const key = process.env.PALPACK_KEY;
   if (!key) { console.error('Set PALPACK_KEY to the PRIVATE signing value (base64url).'); process.exit(2); }
@@ -498,6 +547,16 @@ async function publish() {
     channels.push({
       name: 'backgrounds', content, bytes: null, path: bgPath,
       ref: { file: `backgrounds/${name}`, sha256: createHash('sha256').update(bgBytes).digest('hex') }
+    });
+  }
+
+  // The regions channel (B191/B469, `cachepal-regions-v1`) — authored HERE, unlike the
+  // backgrounds (data, not art), and stored verbatim like everything the sha chain covers.
+  const regionsCur = validateRegionsCurrent();
+  if (regionsCur) {
+    channels.push({
+      name: 'regions', content: regionsCur.content, bytes: null, path: regionsCur.path,
+      ref: { file: `regions/${regionsCur.name}`, sha256: createHash('sha256').update(regionsCur.bytes).digest('hex') }
     });
   }
 
