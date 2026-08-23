@@ -1,5 +1,14 @@
 # Content drops
 
+## Generation 14 — the regions channel's first drop (2026-08-23)
+
+24 tags-only entries against compiled regions — `island` / `coastal` / `alpine`, B191's own
+fishing-pole vocabulary, two tags maximum, only where the geography is beyond argument. The
+third channel finally carries content, four generations after the client learned to read it
+(B469): tag chips appear on the found-place row of EXISTING Pals, and `channel-verify` went
+fully green for the first time in its history — all three channels verified, cached, and
+agreeing with the signed registry on a fresh live profile.
+
 ## Generation 13 — the recolour (2026-08-22, same day as 12)
 
 `W64`'s colour clauses caught all three generation-12 species on the first full-suite run
