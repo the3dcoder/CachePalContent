@@ -77,6 +77,7 @@ BEFORE="$(curl -fsS --max-time 30 "$REGISTRY_URL" 2>/dev/null | node -e "
     try{const p=JSON.parse(Buffer.from(JSON.parse(s).payload,'base64url').toString());
     console.log('generation '+p.generation+', '+p.species.length+' species');}catch(e){console.log('');}});" || echo '')"
 [ -n "$BEFORE" ] && say "live now: $BEFORE" || say "could not read the live registry — publish will decide"
+BEFORE_GEN="$(printf '%s' "$BEFORE" | sed -n 's/^generation \([0-9]*\),.*/\1/p')"
 
 # ---- sign ----------------------------------------------------------------------------------
 say "signing…"
@@ -99,7 +100,11 @@ for _ in $(seq 1 30); do
       try{const p=JSON.parse(Buffer.from(JSON.parse(s).payload,'base64url').toString());
       console.log(p.generation+' '+p.species.length);}catch(e){console.log('');}});" || echo '')"
   set -- $NOW
-  if [ "${2:-}" = "$COUNT" ]; then
+  # B475's publish taught this loop a lesson: the count alone cannot tell generations apart.
+  # A grids-only drop keeps the species count, so a stale edge still serving the PREVIOUS
+  # generation matched "27 = 27" and this line announced the old generation as the new drop.
+  # The generation must have MOVED past the baseline read before signing.
+  if [ "${2:-}" = "$COUNT" ] && [ "${1:-0}" != "${BEFORE_GEN:-}" ]; then
     printf '\n\033[32m✔ generation %s is live — %s species\033[0m\n' "$1" "$2"
     exit 0
   fi
