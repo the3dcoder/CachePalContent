@@ -36,6 +36,12 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 
+# Every stage grid a pack species can carry, required and optional alike. The elder is optional
+# (B26/Q8) and absent from most species, which is exactly why it needs naming here: code that
+# walked "the grids this revision sent" instead of "the grids a species can have" could not see an
+# elder being removed, and code that listed the required three by hand simply forgot it (B641).
+GRID_KEYS = ("gridBaby", "gridTeen", "gridAdult", "gridElder")
+
 
 def az_query(filter_: str, select: str | None = None) -> list[dict]:
     args = ["az", "storage", "entity", "query", "--table-name", "BarnQueue",
@@ -136,6 +142,12 @@ def main() -> None:
             "gridBaby": sub["gridBaby"],
             "gridTeen": sub["gridTeen"],
             "gridAdult": sub["gridAdult"],
+            # B641 — the elder is optional (B26/Q8), so it is written by PRESENCE: absent when the
+            # creator left the fourth canvas blank, which is what makes elders fall back to the
+            # adult. It was written by nothing at all until now, so a creator who did draw one had
+            # it silently dropped on the way to the pack — while the Studio told them, at
+            # Studio.razor:466, that leaving it blank is what makes the adult stand in.
+            **({"gridElder": sub["gridElder"]} if sub.get("gridElder") else {}),
             "premiereSeed": seed,
             "premiereDna": dna,
             "history": [{"date": today, "change": f"created (drop {args.drop_tag})", "by": by}],
@@ -177,7 +189,12 @@ def main() -> None:
         if is_revision:
             by = row.get("SubmitterName") or "someone"
             new_grids = {g: body[g] for g in ("gridBaby", "gridTeen", "gridAdult")}
-            if any(species.get(g) != new_grids[g] for g in new_grids):
+            if body.get("gridElder"):
+                new_grids["gridElder"] = body["gridElder"]
+            # B641 — compared across the UNION, not across the revision's own keys. Iterating
+            # `new_grids` alone made one art edit invisible: clearing the elder removes the key, so
+            # there was nothing left to compare and the drop reported "touched up".
+            if any(species.get(g) != new_grids.get(g) for g in GRID_KEYS):
                 changed.append("first custom art" if "gridBaby" not in species else "art")
             for src, dst in (("name", "name"), ("lore", "description"), ("element", "element")):
                 if body.get(src, "").strip() and body[src].strip() != species.get(dst, ""):
@@ -201,6 +218,11 @@ def main() -> None:
                 "weight": body.get("suggestedWeight", species.get("weight", 60)),
                 **new_grids,
             })
+            # B641 — `update()` adds and replaces but never removes, so an elder the revision
+            # cleared has to be dropped by hand. Without this the species keeps publishing a life
+            # stage its creator deleted, and no later revision can ever take it off.
+            if "gridElder" not in new_grids:
+                species.pop("gridElder", None)
             entry_change = f"revised: {', '.join(changed) if changed else 'touched up'}"
             species.setdefault("history", []).append(
                 {"date": today, "change": entry_change, "by": by})
