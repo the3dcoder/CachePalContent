@@ -100,15 +100,42 @@ def main() -> None:
         close_loop.append(cmd)
 
     # ---- 1. approved submissions → new v2 species files ----------------------
+    # B648 — every file path this loop writes, so a second row cannot silently take a first row's.
+    claimed_keys: set[str] = set()
     rows = az_query("PartitionKey eq 'q' and Type eq 'species-submission' and Status eq 'approved'")
     for row in sorted(rows, key=lambda r: r["RowKey"], reverse=True):  # oldest first
         sub = json.loads(row["BodyJson"])
         name = sub["name"].strip()
+        # B648 — a spent row is skipped by its STAMP, not only by its name. The runbook promises
+        # both ("skips species already in the registry AND rows already stamped PublishedAt") and
+        # the dex-edit loop below has always checked it; this one matched names against the local
+        # registry alone. So a row whose species was later RENAMED by a revision stopped matching
+        # and was re-created under its original slug with a fresh id, clobbering the live species
+        # file until palpack's append-only check halted the drop at the signing step.
+        if row.get("PublishedAt"):
+            print(f"SKIP {name} — row already stamped published {row['PublishedAt']}")
+            continue
+
         if name.lower() in published:
             print(f"SKIP {name} — already in the registry")
             continue
 
         key = slug(name)
+        # B648 — the file path IS slug(name), and nothing checked it was free. Uniqueness is
+        # enforced on the exact lowercased display NAME (the submit-time duplicate guard, and
+        # `published` above), but slug() folds spaces and punctuation to '-', so "Sky Lark" and
+        # "Sky-Lark" are two approvable names and one file. In the same drop the first is written
+        # and then overwritten by the second — and palpack cannot see it, because its duplicate-id
+        # and duplicate-key checks compare distinct FILES and this collision produces only one.
+        out = ROOT / "species" / f"{key}.json"
+        if key in claimed_keys or out.exists():
+            clash = "another approved row in this drop" if key in claimed_keys else "an already-published species"
+            raise SystemExit(
+                f"REFUSING: '{name}' publishes to species/{key}.json, which {clash} already claims. "
+                "Two different display names can slug to the same file. Rename one of them and re-run "
+                "— publishing over it would lose a species nobody would see go.")
+        claimed_keys.add(key)
+
         overlay_path = Path(args.overlays) / f"{key}.overlay.json"
         if not overlay_path.exists():
             raise SystemExit(f"MISSING OVERLAY for {name}: author {overlay_path} first "
@@ -152,7 +179,6 @@ def main() -> None:
             "premiereDna": dna,
             "history": [{"date": today, "change": f"created (drop {args.drop_tag})", "by": by}],
         }
-        out = ROOT / "species" / f"{key}.json"
         out.write_text(json.dumps(species, indent=2, ensure_ascii=False) + "\n")
         print(f"WROTE {out.name}: id {next_id}, premiere '{seed}' → {dna} (by {by})")
         stamp(row["RowKey"],

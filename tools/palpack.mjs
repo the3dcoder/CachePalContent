@@ -390,10 +390,17 @@ function canonical(obj) {
 function assertPinnedTree(speciesCount, when) {
   const pinCommit = process.env.PALPACK_EXPECT_COMMIT;
   const pinCount = process.env.PALPACK_EXPECT_SPECIES;
-  if (!pinCommit && !pinCount) {
+  // B648 — EITHER pin missing is a usage refusal, not just both. This read `&&`, so a HALF-pinned
+  // run passed the gate — and the count clause below is skipped whenever `PALPACK_EXPECT_SPECIES`
+  // is unset, which leaves exactly the B350 hole these pins exist to close: "a run once signed six
+  // species while eighteen were being published" is a commit-pinned run with no count pin. Three
+  // documents already said the refusal fires when either is missing (WEEKLY_DROP_RUNBOOK.md:64 and
+  // :303, handbook 06-operations-and-content.md:340); the code is what was wrong, so the code moved.
+  if (!pinCommit || !pinCount) {
     console.error('REFUSING TO SIGN AN UNPINNED TREE.');
     console.error('  Set PALPACK_EXPECT_COMMIT to the commit you mean to publish (git rev-parse HEAD),');
     console.error('  and PALPACK_EXPECT_SPECIES to how many species it should contain.');
+    console.error(`  Missing: ${[!pinCommit && 'PALPACK_EXPECT_COMMIT', !pinCount && 'PALPACK_EXPECT_SPECIES'].filter(Boolean).join(' and ')}.`);
     console.error('  Both are cheap; a wrong generation is permanent (B350).');
     process.exit(2);
   }
