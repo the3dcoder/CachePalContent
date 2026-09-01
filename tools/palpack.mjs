@@ -67,7 +67,7 @@ import { execFileSync, spawnSync } from 'node:child_process';
 import { createHash, createPrivateKey, sign } from 'crypto';
 import { readFileSync, writeFileSync, readdirSync, existsSync, mkdirSync } from 'fs';
 import { join, dirname } from 'path';
-import { fileURLToPath } from 'url';
+import { fileURLToPath, pathToFileURL } from 'url';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -93,6 +93,20 @@ if (process.env.HTTPS_PROXY && !process.env.NODE_USE_ENV_PROXY && !process.env.P
   });
   process.exit(r.status ?? 1);
 }
+
+// ── B614: the overlays rulebook is the GAME repo's node module ─────────────────────────────────
+// One spelling, shipped beside the C# reader it mirrors (CachePal/tools/palpack-overlays.mjs);
+// the game's W435-PALPACK gate holds the two equivalent by fixture sweep. Resolved the way the
+// game resolves THIS repo in reverse (BarnPaths.ContentRepo): an operator's CACHEPAL_GAME_REPO
+// wins, else the sibling clone every working copy has. A missing module refuses only when a
+// species actually carries overlays — "could not check" and "checked" must never look alike.
+const GAME_REPO = process.env.CACHEPAL_GAME_REPO
+  || [join(ROOT, '..', 'CachePal'), join(ROOT, '..', 'cachepal')].find(existsSync);
+const overlaysRules = await (async () => {
+  const p = GAME_REPO && join(GAME_REPO, 'tools', 'palpack-overlays.mjs');
+  if (!p || !existsSync(p)) return null;
+  return import(pathToFileURL(p).href);
+})();
 
 const LEGEND = new Set(['.', 'O', 'B', 'S', 'A', 'E', 'W', 'M', 'C', '#']);
 // Custom body grids use the composer ROLE alphabet (SpeciesSubmission.AllowedChars
@@ -275,6 +289,19 @@ function validateAll() {
       if (!Array.isArray(s.cosmetics) || s.cosmetics.length === 0) fail(ctx, 'cosmetics, when present, must be a non-empty array');
       for (const c of s.cosmetics) {
         validateCosmetic(c, ctx, seenCosmeticKeys);
+      }
+    }
+
+    // ---- B614: per-stage overlays (additive field; reader = the game's PackStageOverlays).
+    // The rules live in the game repo beside the reader they mirror — this file only finds
+    // the module and speaks its sentences; a second copy here would be the drift this whole
+    // repo refuses. v2 pairing mirrors cosmetics: v1 packs stay untouched for old clients.
+    if (s.overlays !== undefined) {
+      if (s.schema !== 'cachepal-pack-v2') fail(ctx, 'overlays require a v2 pack (v1 packs stay untouched for old-client compat)');
+      if (!overlaysRules) {
+        fail(ctx, 'overlays present but the game-repo rulebook is missing — clone CachePal beside this repo or set CACHEPAL_GAME_REPO (it holds tools/palpack-overlays.mjs)');
+      } else {
+        for (const err of overlaysRules.validateOverlays(s.overlays)) fail(ctx, err);
       }
     }
 
