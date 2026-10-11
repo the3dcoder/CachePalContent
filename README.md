@@ -87,9 +87,13 @@ community — gets approved in one place:
 # 1. file a wave into the Barn queue as pending, then approve it in /admin
 AZURE_STORAGE_CONNECTION_STRING='...' python3 tools/file-wave.py drafts/<wave>/*.json
 
-# 2. assemble the approved pool into species sources
+# 2. assemble the approved pool into species sources. A version 2 row (the Studio
+#    from 2026-10-11) carries its colours, shape, appetite and stage lines; only a
+#    version 1 row needs a hand-written drafts/<wave>/<key>.overlay.json. Painted
+#    overlays and second frames always go into the pack as drawn.
+#    Its checks: python3 tools/test_build_drop.py (throwaway copies; touches nothing).
 AZURE_STORAGE_CONNECTION_STRING='...' python3 tools/build-drop.py \
-    --cachepal-root /path/to/CachePal --overlays drafts/<wave> --drop-tag YYYY-Www
+    --cachepal-root /path/to/CachePal [--overlays drafts/<wave>] --drop-tag YYYY-Www
 
 # 3. validate, sign, publish
 node tools/palpack.mjs validate

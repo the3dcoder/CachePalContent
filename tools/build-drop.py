@@ -6,9 +6,13 @@ Reads APPROVED rows and turns them into species/*.json sources, ready for
 `palpack.mjs validate` + `publish`:
 
   1. species-submission rows → new cachepal-pack-v2 species files:
-     append-only ids after the current registry max, overlay file for the
-     publish-only fields (colors/archetype/hungryFor/decay/stage lines),
-     premiere seed = requestedSeed or "<name> premiere", premiere DNA minted
+     append-only ids after the current registry max. A version 2 row (the
+     Studio from studio-v2, 2026-10-11: `"version": 2`) carries the maker's
+     colours, archetype, hungryFor, needDecayBias and three stage lines, so
+     nothing is written by hand; a version 1 row still needs an overlay file
+     for them (--overlays). Every row's painted overlays and second frames
+     (gridBabyB…gridElderB) go into the pack as the maker painted them.
+     Premiere seed = requestedSeed or "<name> premiere", premiere DNA minted
      via the CachePal FreezeHarness, createdBy + history seeded.
   2. dex-edit rows → weight/lore/retire/delist applied to their target species files,
      folded oldest→newest (latest wins per field; retire pins weight 0 —
@@ -17,7 +21,10 @@ Reads APPROVED rows and turns them into species/*.json sources, ready for
 
 Usage:
   AZURE_STORAGE_CONNECTION_STRING='…' python3 tools/build-drop.py \
-      --cachepal-root /home/user/CachePal --overlays <dir> [--drop-tag 2026-W30]
+      --cachepal-root /home/user/CachePal [--overlays <dir>] [--drop-tag 2026-W30]
+
+  --overlays is needed only when a version 1 row is approved.
+  Checks: python3 tools/test_build_drop.py (throwaway copies, stub az and dotnet).
 
 Then: palpack validate → PALPACK_KEY=… palpack publish → git push → close the
 loop on the queue rows with the printed az commands (reason = founder seed).
@@ -41,6 +48,56 @@ ROOT = Path(__file__).resolve().parent.parent
 # walked "the grids this revision sent" instead of "the grids a species can have" could not see an
 # elder being removed, and code that listed the required three by hand simply forgot it (B641).
 GRID_KEYS = ("gridBaby", "gridTeen", "gridAdult", "gridElder")
+
+# Version 2 (studio-v2): the maker's choices, spelled as the pack spells them, so they are copied
+# verbatim. CachePal's SpeciesSubmission.TryValidate holds each to the Studio's lists before a row
+# can be filed; a new species' row carries all eight, a revision any of them.
+CHOICE_KEYS = ("baseColor", "shinyColor", "bodyArchetype", "hungryFor", "needDecayBias",
+               "babyDescription", "teenDescription", "adultDescription")
+LINE_KEYS = ("babyDescription", "teenDescription", "adultDescription")
+# The second animation frames. Absent is none: frame A plays alone.
+FRAME_KEYS = ("gridBabyB", "gridTeenB", "gridAdultB", "gridElderB")
+# What each choice is called in a revision's history entry.
+CHOICE_WORDS = {"baseColor": "colours", "shinyColor": "colours", "bodyArchetype": "shape",
+                "hungryFor": "appetite", "needDecayBias": "appetite", "babyDescription": "lines",
+                "teenDescription": "lines", "adultDescription": "lines"}
+
+
+def present(value) -> bool:
+    """A value a row really carries: not null, not blank, not an empty list."""
+    if value is None:
+        return False
+    if isinstance(value, str):
+        return value.strip() != ""
+    if isinstance(value, list):
+        return len(value) > 0
+    return True
+
+
+def is_v2(sub: dict) -> bool:
+    return sub.get("version") == 2
+
+
+def choice(sub: dict, key: str):
+    value = sub[key]
+    return value.strip() if key in LINE_KEYS else value
+
+
+def choices_of(sub: dict, name: str) -> dict:
+    """A version 2 new species' choices: all eight, or the row is refused (never guessed at)."""
+    missing = [k for k in CHOICE_KEYS if not present(sub.get(k))]
+    if missing:
+        raise SystemExit(f"INCOMPLETE VERSION 2 ROW for {name}: {', '.join(missing)} missing. The Barn's rulebook "
+                         "refuses such a row, so it was filed some other way: reject it in /admin.")
+    return {k: choice(sub, k) for k in CHOICE_KEYS}
+
+
+def painted(sub: dict) -> dict:
+    """The art a row carries beyond the stage grids, as the maker painted it: second frames and overlays."""
+    out = {k: sub[k] for k in FRAME_KEYS if present(sub.get(k))}
+    if present(sub.get("overlays")):
+        out["overlays"] = sub["overlays"]
+    return out
 
 
 def az_query(filter_: str, select: str | None = None) -> list[dict]:
@@ -79,7 +136,7 @@ def mint(cachepal_root: str, species_id: int, seed: str) -> str:
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--cachepal-root", required=True)
-    ap.add_argument("--overlays", required=True, help="dir of <key>.overlay.json files")
+    ap.add_argument("--overlays", help="dir of <key>.overlay.json files, for version 1 rows")
     ap.add_argument("--drop-tag", default=datetime.now(timezone.utc).strftime("%G-W%V"))
     args = ap.parse_args()
 
@@ -136,11 +193,17 @@ def main() -> None:
                 "— publishing over it would lose a species nobody would see go.")
         claimed_keys.add(key)
 
-        overlay_path = Path(args.overlays) / f"{key}.overlay.json"
-        if not overlay_path.exists():
-            raise SystemExit(f"MISSING OVERLAY for {name}: author {overlay_path} first "
-                             "(colors, archetype, hungryFor, needDecayBias, stage descriptions).")
-        overlay = json.loads(overlay_path.read_text())
+        if is_v2(sub):
+            # The maker decided what ships: nothing here is written by hand.
+            look = choices_of(sub, name)
+        else:
+            overlay_path = Path(args.overlays or "<--overlays dir>") / f"{key}.overlay.json"
+            if not args.overlays or not overlay_path.exists():
+                raise SystemExit(f"MISSING OVERLAY for {name}: author {overlay_path} first "
+                                 "(colors, archetype, hungryFor, needDecayBias, stage descriptions) — "
+                                 "a version 1 row carries none of them.")
+            overlay = json.loads(overlay_path.read_text())
+            look = {k: overlay[k] for k in CHOICE_KEYS}
 
         by = row.get("SubmitterName") or "Cache Pal Studio"
         seed = (sub.get("requestedSeed") or "").strip() or f"{name} premiere"
@@ -154,17 +217,17 @@ def main() -> None:
             "credit": by,
             "createdBy": by,
             "element": sub.get("element", ""),
-            "baseColor": overlay["baseColor"],
-            "shinyColor": overlay["shinyColor"],
-            "bodyArchetype": overlay["bodyArchetype"],
+            "baseColor": look["baseColor"],
+            "shinyColor": look["shinyColor"],
+            "bodyArchetype": look["bodyArchetype"],
             "statBias": [sub.get("biasPower", 0), sub.get("biasMischief", 0),
                          sub.get("biasStealth", 0), sub.get("biasResilience", 0),
                          sub.get("biasLuck", 0), sub.get("biasSignal", 0)],
-            "hungryFor": overlay["hungryFor"],
-            "needDecayBias": overlay["needDecayBias"],
-            "babyDescription": overlay["babyDescription"],
-            "teenDescription": overlay["teenDescription"],
-            "adultDescription": overlay["adultDescription"],
+            "hungryFor": look["hungryFor"],
+            "needDecayBias": look["needDecayBias"],
+            "babyDescription": look["babyDescription"],
+            "teenDescription": look["teenDescription"],
+            "adultDescription": look["adultDescription"],
             "weight": sub.get("suggestedWeight", 60),
             "gridBaby": sub["gridBaby"],
             "gridTeen": sub["gridTeen"],
@@ -175,6 +238,9 @@ def main() -> None:
             # it silently dropped on the way to the pack — while the Studio told them, at
             # Studio.razor:466, that leaving it blank is what makes the adult stand in.
             **({"gridElder": sub["gridElder"]} if sub.get("gridElder") else {}),
+            # studio-v2 — the second frames and the overlays the maker painted. Dropped until now:
+            # the Studio drew them, the reviewer approved them, and the pack never carried them.
+            **painted(sub),
             "premiereSeed": seed,
             "premiereDna": dna,
             "history": [{"date": today, "change": f"created (drop {args.drop_tag})", "by": by}],
@@ -232,8 +298,26 @@ def main() -> None:
                 changed.append("biases")
             if body.get("suggestedWeight") != species.get("weight"):
                 changed.append("weight")
-            # Replace display/data fields; id, key, premiere*, createdBy and the
-            # overlay-only fields (colors/archetype/hungryFor/decay/stage lines)
+            # studio-v2 — the choices a version 2 revision gives replace the live ones; one it leaves
+            # out keeps the live one (the Studio leaves a live value off its lists unpicked).
+            choices = {k: choice(body, k) for k in CHOICE_KEYS if is_v2(body) and present(body.get(k))}
+            for k, v in choices.items():
+                if species.get(k) != v and CHOICE_WORDS[k] not in changed:
+                    changed.append(CHOICE_WORDS[k])
+            # The second frames: a version 2 row carries every one the Pal has (the Studio opens the
+            # live ones on frame 2), so an absent one is none — an old pose would not fit new art. A
+            # version 1 row never carried them and leaves them as they are.
+            frames = {k: body[k] for k in FRAME_KEYS if present(body.get(k))} if is_v2(body) else None
+            if frames is not None and any(species.get(k) != frames.get(k) for k in FRAME_KEYS):
+                changed.append("frames")
+            # The overlays: every row filed since the Studio drew them carries the whole set (an empty
+            # list when there are none); a row from before them has no key, and leaves them alone.
+            carries_overlays = "overlays" in body
+            overlays = body["overlays"] if present(body.get("overlays")) else None
+            if carries_overlays and species.get("overlays") != overlays:
+                changed.append("overlays")
+            # Replace display/data fields; id, key, premiere*, createdBy and (unless a version 2
+            # row gives them) the publish-only fields (colors/archetype/hungryFor/decay/stage lines)
             # stay — creator credit is permanent, decode never reads display.
             species.update({
                 "schema": "cachepal-pack-v2",
@@ -243,7 +327,19 @@ def main() -> None:
                 "statBias": biases,
                 "weight": body.get("suggestedWeight", species.get("weight", 60)),
                 **new_grids,
+                **choices,
             })
+            if frames is not None:
+                for k in FRAME_KEYS:
+                    if k in frames:
+                        species[k] = frames[k]
+                    else:
+                        species.pop(k, None)
+            if carries_overlays:
+                if overlays is None:
+                    species.pop("overlays", None)
+                else:
+                    species["overlays"] = overlays
             # B641 — `update()` adds and replaces but never removes, so an elder the revision
             # cleared has to be dropped by hand. Without this the species keeps publishing a life
             # stage its creator deleted, and no later revision can ever take it off.
