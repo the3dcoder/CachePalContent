@@ -12,8 +12,11 @@ Reads APPROVED rows and turns them into species/*.json sources, ready for
      nothing is written by hand; a version 1 row still needs an overlay file
      for them (--overlays). Every row's painted overlays and second frames
      (gridBabyB…gridElderB) go into the pack as the maker painted them.
-     Premiere seed = requestedSeed or "<name> premiere", premiere DNA minted
-     via the CachePal FreezeHarness, createdBy + history seeded.
+     First-egg phrase (premiereSeed) = requestedSeed or "<name> premiere",
+     minted once through the CachePal FreezeHarness to prove it mints for the
+     new id; createdBy + history seeded. The minted DNA is written nowhere: a
+     DNA is a clone code and every file here is served (tools/dna-scan.py), so
+     the game mints the first egg from the phrase itself.
   2. dex-edit rows → weight/lore/retire/delist applied to their target species files,
      folded oldest→newest (latest wins per field; retire pins weight 0 —
      the SAME net state the /admin/dex staged overlay showed), history
@@ -21,13 +24,19 @@ Reads APPROVED rows and turns them into species/*.json sources, ready for
 
 Usage:
   AZURE_STORAGE_CONNECTION_STRING='…' python3 tools/build-drop.py \
-      --cachepal-root /home/user/CachePal [--overlays <dir>] [--drop-tag 2026-W30]
+      --cachepal-root /home/user/CachePal [--overlays <dir>] [--drop-tag 2026-W30] \
+      [--manifest <file>] [--rows <file>]
 
   --overlays is needed only when a version 1 row is approved.
+  --manifest writes the rows this run built, as JSON: what tools/drop.py stamps
+    PublishedAt on, and writes the drop notes from. [] when nothing was built.
+  --rows reads the approved pool from a file (the az query's "items" list, or the
+    list itself) instead of the queue: a rehearsal with no queue at all.
   Checks: python3 tools/test_build_drop.py (throwaway copies, stub az and dotnet).
 
-Then: palpack validate → PALPACK_KEY=… palpack publish → git push → close the
-loop on the queue rows with the printed az commands (reason = founder seed).
+The whole drop is one command, tools/drop.py, which runs this. By hand: palpack
+validate → publish-drop.sh → close the loop on the queue rows with the printed az
+commands (the Reason tells the maker their first-egg phrase).
 Idempotent: species already in the registry are skipped.
 """
 
@@ -100,7 +109,15 @@ def painted(sub: dict) -> dict:
     return out
 
 
+ROWS_FILE: str | None = None  # --rows: the approved pool from a file, not the queue
+
+
 def az_query(filter_: str, select: str | None = None) -> list[dict]:
+    if ROWS_FILE is not None:
+        data = json.loads(Path(ROWS_FILE).read_text())
+        items = data.get("items", []) if isinstance(data, dict) else data
+        kind = re.search(r"Type eq '([a-z-]+)'", filter_)
+        return [r for r in items if r.get("Status") == "approved" and (not kind or r.get("Type") == kind.group(1))]
     args = ["az", "storage", "entity", "query", "--table-name", "BarnQueue",
             "--filter", filter_, "-o", "json"]
     if select:
@@ -138,23 +155,33 @@ def main() -> None:
     ap.add_argument("--cachepal-root", required=True)
     ap.add_argument("--overlays", help="dir of <key>.overlay.json files, for version 1 rows")
     ap.add_argument("--drop-tag", default=datetime.now(timezone.utc).strftime("%G-W%V"))
+    ap.add_argument("--manifest", help="write the rows this run built here, as JSON")
+    ap.add_argument("--rows", help="read the approved pool from this file instead of the queue")
     args = ap.parse_args()
+    global ROWS_FILE
+    ROWS_FILE = args.rows
+    if not args.rows and not os.environ.get("AZURE_STORAGE_CONNECTION_STRING"):
+        raise SystemExit("Set AZURE_STORAGE_CONNECTION_STRING first (see runbook step 1), or rehearse with --rows <file>.")
 
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     now_iso = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     published = {s["name"].lower() for s in registry_species()}
     next_id = max((s["id"] for s in registry_species()), default=14) + 1
     close_loop: list[str] = []
+    shipped: list[dict] = []
     new_species_keys: dict[int, str] = {}
 
-    def stamp(row_key: str, reason: str | None = None) -> None:
+    def stamp(row: dict, reason: str | None = None, **what) -> None:
         """Close-loop merge: PublishedAt clears the /admin/dex staged chip and
-        marks the row spent for future runs; Reason is the creator-facing note."""
+        marks the row spent for future runs; Reason is the creator-facing note.
+        Each stamped row is also one manifest entry (--manifest)."""
+        row_key = row["RowKey"]
         cmd = ("az storage entity merge --table-name BarnQueue --entity "
                f"PartitionKey=q 'RowKey={row_key}' 'PublishedAt={now_iso}'")
         if reason:
             cmd += f" 'Reason={reason}'"
         close_loop.append(cmd)
+        shipped.append({"rowKey": row_key, "type": row.get("Type"), "reason": reason, **what})
 
     # ---- 1. approved submissions → new v2 species files ----------------------
     # B648 — every file path this loop writes, so a second row cannot silently take a first row's.
@@ -207,7 +234,7 @@ def main() -> None:
 
         by = row.get("SubmitterName") or "Cache Pal Studio"
         seed = (sub.get("requestedSeed") or "").strip() or f"{name} premiere"
-        dna = mint(args.cachepal_root, next_id, seed)
+        mint(args.cachepal_root, next_id, seed)  # proves the phrase mints for this id; the DNA goes nowhere
         species = {
             "schema": "cachepal-pack-v2",
             "id": next_id,
@@ -242,13 +269,13 @@ def main() -> None:
             # the Studio drew them, the reviewer approved them, and the pack never carried them.
             **painted(sub),
             "premiereSeed": seed,
-            "premiereDna": dna,
             "history": [{"date": today, "change": f"created (drop {args.drop_tag})", "by": by}],
         }
         out.write_text(json.dumps(species, indent=2, ensure_ascii=False) + "\n")
-        print(f"WROTE {out.name}: id {next_id}, premiere '{seed}' → {dna} (by {by})")
-        stamp(row["RowKey"],
-              f"Published in drop {args.drop_tag} as species {next_id} — founder seed: {dna}")
+        print(f"WROTE {out.name}: id {next_id}, first-egg phrase '{seed}' (by {by})")
+        stamp(row, f"Published in drop {args.drop_tag} as species {next_id}. Its first-egg phrase: \u201c{seed}\u201d.",
+              name=name, key=key, id=next_id, phrase=seed, by=by, element=species["element"],
+              lore=species["description"])
         new_species_keys[next_id] = key
         next_id += 1
 
@@ -348,7 +375,8 @@ def main() -> None:
             entry_change = f"revised: {', '.join(changed) if changed else 'touched up'}"
             species.setdefault("history", []).append(
                 {"date": today, "change": entry_change, "by": by})
-            stamp(row["RowKey"], f"Published in drop {args.drop_tag} — {entry_change}")
+            stamp(row, f"Published in drop {args.drop_tag} — {entry_change}",
+                  name=species["name"], key=key, id=sid, change=entry_change, by=by)
         else:
             if body.get("retire"):
                 species["weight"] = 0
@@ -370,12 +398,15 @@ def main() -> None:
             species.setdefault("history", []).append(
                 {"date": today, "change": f"dex-edit: {', '.join(changed)} (drop {args.drop_tag})",
                  "by": "operator"})
-            stamp(row["RowKey"])  # clears its 🌾 staged chip in /admin/dex
+            stamp(row, None, name=species["name"], key=key, id=sid,
+                  change=f"dex-edit: {', '.join(changed)}")  # clears its 🌾 staged chip in /admin/dex
 
         path.write_text(json.dumps(species, indent=2, ensure_ascii=False) + "\n")
         print(f"{'REVISED' if is_revision else 'EDITED'} {path.name}: {', '.join(changed) or 'no visible change'}")
 
-    print("\nNext: node tools/palpack.mjs validate && PALPACK_KEY=… node tools/palpack.mjs publish")
+    if args.manifest:
+        Path(args.manifest).write_text(json.dumps(shipped, indent=2, ensure_ascii=False) + "\n")
+    print("\nNext: node tools/palpack.mjs validate && ./tools/publish-drop.sh <count> (tools/drop.py does all of it)")
     if close_loop:
         print("\nClose the loop after publish + push:")
         for cmd in close_loop:
@@ -383,6 +414,4 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    if not os.environ.get("AZURE_STORAGE_CONNECTION_STRING"):
-        raise SystemExit("Set AZURE_STORAGE_CONNECTION_STRING first (see runbook step 1).")
     main()

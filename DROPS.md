@@ -1,5 +1,11 @@
 # Content drops
 
+> **No DNA on this page.** A Pal's DNA is a clone code: anyone who holds one hatches that same Pal,
+> so it is never published (Cache Pal's principles: no public identity built from DNA). On 2026-10-11
+> the premiere codes this log printed for generations 1, 3 and 4 were taken out, and each species'
+> first-egg phrase (the words its first egg is made from) stands in their place. A drop prints the
+> phrase only, and `tools/dna-scan.py` fails if any file this site serves holds a Pal's DNA.
+
 ## Generation 17 — the breathing drop (2026-08-23, same day as 16)
 
 Generation 16's recorded residue, paid the same day: all eleven full-grid species gain
@@ -191,7 +197,8 @@ backgrounds channel still answers 200.
 
 ## Generation 1 — 2026-07-23
 
-**Emberimp** (species 14) — premiere code: `e1f20c80-000e-c5e0-5f54-29a6afd8f631`
+**Emberimp** (species 14) — premiere code taken out (see the note at the top); its first-egg phrase
+was never recorded.
 Paste it in the Hatchery seed box (requires app content sync — the app fetches
 this repo automatically). Weekly weight-table rolls arrive with the next app
 release; until then the premiere code is the only wild source. 🔥
@@ -201,14 +208,14 @@ release; until then the premiere code is the only wild source. 🔥
 The first drop assembled through the Barn queue: filed → operator-approved
 in /admin → signed. Custom 3-stage art debuts (pack v2).
 
-**Thistledown** (species 15, Bloom) — premiere code: `e0915087-000f-c9ad-88cf-33c76fb4819c`
-_A wandering tuft that collects overheard wishes._ Founder phrase: "make a wish" 🌾
+**Thistledown** (species 15, Bloom) — first-egg phrase: "make a wish" (code taken out)
+_A wandering tuft that collects overheard wishes._ 🌾
 
-**Puddlejack** (species 16, Tide) — premiere code: `5f9cbe7b-0010-c9b0-0315-a7d139d76a54`
-_A puddle that jumped back._ Founder phrase: "after the rain" 💧
+**Puddlejack** (species 16, Tide) — first-egg phrase: "after the rain" (code taken out)
+_A puddle that jumped back._ 💧
 
-**Glowtail** (species 17, Neon) — premiere code: `b3ce4dbe-0011-cf70-1a1b-498cd46fdebb`
-_A neon gecko whose tail writes names in the dark._ Founder phrase: "night market" ✨
+**Glowtail** (species 17, Neon) — first-egg phrase: "night market" (code taken out)
+_A neon gecko whose tail writes names in the dark._ ✨
 
 Also in this drop: **Emberimp** weight 60 → 69 + lore touch-up (dex-edit,
 first staged-pool publish). Paste any premiere code in the Hatchery seed box
@@ -220,12 +227,12 @@ Two species, and the **first content-delivered cosmetics** ever to ship: pieces
 now ride a v2 species pack as an additive field, exactly as v1.7 designed and
 nobody had yet used.
 
-**Latchback** (species 18, Alloy) — premiere code: `3f5b0022-0012-cd25-4ecd-1c7a8005c4e6`
-_A walking strongbox that files everything and returns nothing._ Premiere seed: "sign the logbook" 🧰
+**Latchback** (species 18, Alloy) — first-egg phrase: "sign the logbook" (code taken out)
+_A walking strongbox that files everything and returns nothing._ 🧰
 Carries **Paper Admiral** (hat, uncommon, 350 coins).
 
-**Hushwing** (species 19, Mist) — premiere code: `ebfdbe91-0013-cecb-7058-58378a025dfa`
-_A fog-wader that lifts one wing and the morning goes quiet._ Premiere seed: "quiet as weather" 🌫️
+**Hushwing** (species 19, Mist) — first-egg phrase: "quiet as weather" (code taken out)
+_A fog-wader that lifts one wing and the morning goes quiet._ 🌫️
 Carries **Moth Hour** (aura, rare, 900 coins) — the first aura with a shape in it
 rather than a dither, three moths that never lose a cell on any body at any stage.
 

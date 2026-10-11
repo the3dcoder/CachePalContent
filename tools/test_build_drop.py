@@ -116,12 +116,17 @@ class Drop:
         for key, data in (overlays or {}).items():
             (self.overlays / f"{key}.overlay.json").write_text(json.dumps(data))
 
-    def run(self) -> subprocess.CompletedProcess:
-        env = {**os.environ, "PATH": f"{self.bin}{os.pathsep}{os.environ['PATH']}",
-               "AZURE_STORAGE_CONNECTION_STRING": "stub", "BUILD_DROP_ROWS": str(self.tmp / "rows.json")}
+    def run(self, *extra: str, queue: bool = True) -> subprocess.CompletedProcess:
+        env = {**os.environ, "PATH": f"{self.bin}{os.pathsep}{os.environ['PATH']}", "BUILD_DROP_ROWS": str(self.tmp / "rows.json")}
+        env.pop("AZURE_STORAGE_CONNECTION_STRING", None)
+        if queue:
+            env["AZURE_STORAGE_CONNECTION_STRING"] = "stub"
         return subprocess.run([sys.executable, str(self.repo / "tools" / "build-drop.py"), "--cachepal-root", GAME,
-                               "--overlays", str(self.overlays), "--drop-tag", "2026-W41"],
+                               "--overlays", str(self.overlays), "--drop-tag", "2026-W41", *extra],
                               capture_output=True, text=True, env=env)
+
+    def manifest(self) -> list[dict]:
+        return json.loads((self.tmp / "manifest.json").read_text())
 
     def species(self, key: str) -> dict:
         return json.loads((self.repo / "species" / f"{key}.json").read_text())
@@ -174,7 +179,8 @@ class NewSpecies(unittest.TestCase):
         self.assertEqual(s["gridTeenB"], body["gridTeenB"])
         self.assertNotIn("gridBabyB", s, "a frame the maker did not draw is none, so frame A plays alone")
         self.assertEqual(s["overlays"], body["overlays"])
-        self.assertEqual((s["schema"], s["premiereDna"], s["createdBy"]), ("cachepal-pack-v2", PREMIERE, "mossmaker"))
+        self.assertEqual((s["schema"], s["premiereSeed"], s["createdBy"]), ("cachepal-pack-v2", "Fernwhistle premiere", "mossmaker"))
+        self.assertNotIn("premiereDna", s, "a pack is served to everyone, and a DNA is a clone code")
         check = d.validate()
         self.assertEqual(check.returncode, 0, check.stderr + check.stdout)
 
@@ -201,6 +207,43 @@ class NewSpecies(unittest.TestCase):
         result = d.run()
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("INCOMPLETE VERSION 2 ROW for Halfdone: hungryFor", result.stderr + result.stdout)
+
+
+class WhatTheDropRecords(unittest.TestCase):
+    """What build-drop writes down about the rows it built: the manifest drop.py stamps from, and no DNA."""
+
+    def setUp(self):
+        body = v1_body("Fernwhistle", **V2_CHOICES, requestedSeed="under the old fern")
+        self.d = Drop([row("2", "species-submission", body),
+                       row("1", "species-revision", v1_body("Glowtail", targetSpeciesId=17), submitter="glowfan")])
+        self.addCleanup(self.d.close)
+
+    def test_the_manifest_names_exactly_the_rows_built_with_the_phrase_and_no_dna(self):
+        result = self.d.run("--manifest", str(self.d.tmp / "manifest.json"))
+        self.assertEqual(result.returncode, 0, result.stderr + result.stdout)
+        shipped = self.d.manifest()
+        self.assertEqual([(r["rowKey"], r["type"]) for r in shipped],
+                         [("2", "species-submission"), ("1", "species-revision")])
+        new = shipped[0]
+        self.assertEqual((new["name"], new["key"], new["phrase"], new["by"]), ("Fernwhistle", "fernwhistle", "under the old fern", "mossmaker"))
+        self.assertEqual(new["id"], self.d.species("fernwhistle")["id"])
+        self.assertIn("\u201cunder the old fern\u201d", new["reason"], "the maker is told their first-egg phrase")
+        for text in (json.dumps(shipped), result.stdout, result.stderr):
+            self.assertNotIn(PREMIERE, text, "the first egg's DNA is written nowhere")
+
+    def test_rows_can_come_from_a_file_for_a_rehearsal_with_no_queue_at_all(self):
+        rows_file = self.d.tmp / "fixture-rows.json"
+        rows_file.write_text((self.d.tmp / "rows.json").read_text())
+        result = self.d.run("--rows", str(rows_file), "--manifest", str(self.d.tmp / "manifest.json"), queue=False)
+        self.assertEqual(result.returncode, 0, result.stderr + result.stdout)
+        self.assertEqual(len(self.d.manifest()), 2)
+
+    def test_with_nothing_approved_the_manifest_is_empty(self):
+        empty = Drop([])
+        self.addCleanup(empty.close)
+        result = empty.run("--manifest", str(empty.tmp / "manifest.json"))
+        self.assertEqual(result.returncode, 0, result.stderr + result.stdout)
+        self.assertEqual(empty.manifest(), [])
 
 
 class Revisions(unittest.TestCase):

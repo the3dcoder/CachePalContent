@@ -271,9 +271,12 @@ function validateAll() {
         fail(ctx, 'premiereSeed must be ≤64 chars, no | or control chars');
       }
     }
-    if (s.premiereDna !== undefined
-      && !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(s.premiereDna)) {
-      fail(ctx, 'premiereDna must be a GUID');
+    // A DNA GUID is a clone code: whoever holds one hatches the same Pal, and every pack is served to
+    // everyone. So a pack carries the first-egg phrase (premiereSeed) and never the DNA; the game mints
+    // the first egg from the phrase itself (SpeciesObtainHints.PremiereDna). Packs carried it until
+    // 2026-10-11; tools/dna-scan.py holds every served file to the same rule.
+    if (s.premiereDna !== undefined) {
+      fail(ctx, 'premiereDna is a clone code and a pack is served to everyone: remove it. The game mints the first egg from premiereSeed');
     }
 
     // ---- v1.7: cosmetics ride v2 species packs (additive field, never a new
