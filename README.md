@@ -24,18 +24,24 @@ any disagreement with this file:
 - `species/*.json` — source of truth, one file per species. Schema is
   `cachepal-pack-v1` for archetype-composed species, `cachepal-pack-v2` for
   species carrying their own 16×16 stage art.
-- `packs/` — published, content-hashed, immutable packs (generated, committed).
+- `packs/` — published, content-hashed, immutable packs (generated, committed). A
+  superseded pack is kept, unless it holds a Pal's DNA (packs carried the first egg's
+  DNA until 2026-10-11): `publish-drop.sh` removes those once the newly signed registry
+  no longer names them. They stay in git history.
 - `registry.pub.json` — signed envelope `{payload, signature}`; the payload is
   the canonical registry JSON (base64url), Ed25519-signed with the operator key.
 - `DROPS.md` — the public drop log: what shipped when, plus each species'
-  premiere code.
+  first-egg phrase. Never a DNA.
 - `tools/palpack.mjs` — validate and sign: `new` / `validate` / `publish`.
 - `tools/file-wave.py` — files a first-party species wave into the Barn queue as
   ordinary **pending** rows, so the operator approves it in `/admin` exactly like
   a community submission.
 - `tools/build-drop.py` — turns the approved queue pool into species sources:
-  assigns ids append-only, mints premiere DNA, applies dex-edits and
+  assigns ids append-only, records each first-egg phrase, applies dex-edits and
   species-revisions oldest-first, and prints the close-loop commands.
+- `tools/drop.py` — **the one command**: from the approved queue rows to a signed,
+  pushed generation, its `DROPS.md` section and the stamped rows (below).
+- `tools/dna-scan.py` — fails if any file this site serves holds a Pal's DNA.
 
 ## Rules (binding)
 
@@ -53,7 +59,7 @@ any disagreement with this file:
 4. **New content capability arrives as an additive field on v2 — never a new
    schema string.** A new schema string makes older clients drop the entire pack.
    Fields added this way so far: `createdBy`, `history`, `premiereSeed`,
-   `premiereDna`, `cosmetics`.
+   `premiereDna` (retired 2026-10-11, see rule 11), `cosmetics`.
 5. `statBias` totals ≤ 10 with each value in −5..8; `needDecayBias` in 0.6..1.3.
    That is the fairness envelope, and the validator is where it is enforced.
 6. Every publish is signed. The private key exists in exactly one place — the
@@ -77,11 +83,32 @@ any disagreement with this file:
     clone's is byte-identical. A stale clone re-issues a generation that is
     already signed and cached and silently drops whatever the newer generations
     added — which is what nearly happened in wave 40. `git pull` first.
+11. **No DNA on a served page.** A DNA GUID is a clone code: anyone who holds one
+    hatches the same Pal, and GitHub Pages serves every file here. A drop prints a
+    species' first-egg phrase (`premiereSeed`), never its first egg's DNA; the game
+    mints that egg from the phrase. `palpack validate` refuses `premiereDna`, and
+    `tools/dna-scan.py` fails on any string the game would decode as a Pal's DNA, in
+    any served file; `publish-drop.sh` runs it before signing and before pushing.
 
 ## Publish flow
 
-The normal weekly path is queue-driven, so every species — first-party or
-community — gets approved in one place:
+One command, from this clone's root, once a person has approved rows in the Barn's
+`/admin` (the Studio's queue is the only way in; approval is never the tool's):
+
+```bash
+python3 tools/drop.py --dry-run             # rehearse in a throwaway copy: writes nothing anywhere
+python3 tools/drop.py --dry-run --fixture   # the same with a made-up version 2 row, any time
+python3 tools/drop.py                       # publish: it rehearses again first, and stops if red
+```
+
+It checks the key's public half against the game's `ContentSyncService.PublicKeys[0]`,
+reads the approved, unpublished rows through `az`, builds them, validates, scans for
+DNA, signs and pushes through `publish-drop.sh` (which writes the drop into
+`DROPS.md` in the same commit), stamps `PublishedAt` on exactly the rows it shipped
+and prints what it published. With nothing approved and unpublished it publishes
+nothing. Its checks: `python3 tools/test_drop.py`.
+
+The steps it runs, by hand:
 
 ```bash
 # 1. file a wave into the Barn queue as pending, then approve it in /admin
@@ -95,12 +122,12 @@ AZURE_STORAGE_CONNECTION_STRING='...' python3 tools/file-wave.py drafts/<wave>/*
 AZURE_STORAGE_CONNECTION_STRING='...' python3 tools/build-drop.py \
     --cachepal-root /path/to/CachePal [--overlays drafts/<wave>] --drop-tag YYYY-Www
 
-# 3. validate, sign, publish
+# 3. validate, then sign, scan and push from a clean main (this deploys);
+#    the count is the live species count plus the new ones
 node tools/palpack.mjs validate
-PALPACK_KEY=<PRIVATE value> node tools/palpack.mjs publish
+./tools/publish-drop.sh <count>
 
-# 4. commit and push (this deploys), then run the printed close-loop commands
-git add -A && git commit -m "content: <what>" && git push
+# 4. run the printed close-loop commands
 ```
 
 For a one-off species with no queue row, `node tools/palpack.mjs new <key> <id>`
