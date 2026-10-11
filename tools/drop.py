@@ -433,6 +433,7 @@ def main() -> int:
     elif args.rows:
         args.rows_file = Path(args.rows).resolve()
     keep = args.keep
+    real_started = False
     try:
         live_text = fetch_live()
         live = payload_of(live_text)
@@ -448,6 +449,8 @@ def main() -> int:
         if manifest is None:
             print("\nNothing approved and unpublished in the queue: no drop. (Approval is a person's review in "
                   "the Barn's /admin.)", flush=True)
+            if blockers:
+                print("\nA real run from this clone would stop first:\n  " + "\n  ".join(blockers), flush=True)
             return 0
         say("rehearsal green")
 
@@ -461,13 +464,20 @@ def main() -> int:
             return 0
 
         say("the drop, for real")
+        real_started = True
         (work / "real").mkdir()
         real = one_drop(ROOT, work / "real", args, live, {"CACHEPAL_GAME_REPO": str(args.cachepal_root)},
                         rehearsal_manifest=manifest)
         if real is None:
             raise Stop("The queue had nothing approved and unpublished by the time of the real run. Nothing was written.")
         signed = read_back(ROOT, live, real, pinned_public_key(args.cachepal_root))
-        stamp_rows(real, dry=False)
+        try:
+            stamp_rows(real, dry=False)
+        except Stop as e:
+            raise Stop(f"Generation {signed['generation']} is published, but the queue rows are not all stamped: {e}\n"
+                       f"Stamp each row in {work / 'real' / 'manifest.json'} by hand: az storage entity merge "
+                       "--table-name BarnQueue --entity PartitionKey=q RowKey=<rowKey> PublishedAt=<now, ISO 8601 Z> "
+                       "'Reason=<its reason>'. Do not run the drop again.")
         mark_in_game_in_gallery(real, dry=False)
         try:
             now = payload_of(fetch_live())
@@ -478,8 +488,10 @@ def main() -> int:
         summary(real, signed, args.drop_tag, rehearsal=False)
         return 0
     except Stop as e:
-        keep = True
-        print(f"\n✘ {e}\n  (working files kept in {work})", file=sys.stderr, flush=True)
+        print(f"\n✘ {e}", file=sys.stderr, flush=True)
+        if real_started:
+            keep = True  # the manifest and notes the messages above name
+            print(f"  (this drop's manifest and notes are kept in {work / 'real'})", file=sys.stderr, flush=True)
         return 1
     finally:
         if not keep:
