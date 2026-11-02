@@ -6,6 +6,18 @@
 > first-egg phrase (the words its first egg is made from) stands in their place. A drop prints the
 > phrase only, and `tools/dna-scan.py` fails if any file this site serves holds a Pal's DNA.
 
+## Generation 18 — the same 27 species, with no first-egg DNA (2026-11-02)
+
+No new species, and nothing a player sees. The packs generation 17 named for eleven species
+(15 thistledown, 16 puddlejack, 17 glowtail, 18 latchback, 19 hushwing, 32 pondwink, 33 humblebee,
+34 duskmoth, 36 hucklebear, 37 gloamgecko, 38 ripplechub) still carried their first egg's DNA
+(`premiereDna`), and a DNA is a clone code. This generation re-signs all 27 with that field gone:
+those eleven get new packs whose only difference is the missing field, and the other sixteen keep
+their packs byte for byte. The game never read the field; it mints each first egg from the species'
+first-egg phrase. `publish-drop.sh` took every superseded pack that held a DNA off the site, 45 of
+them (they stay in git history), and `tools/dna-scan.py` finds none in any served file. Published on
+the owner's word (2026-11-02).
+
 ## Generation 17 — the breathing drop (2026-08-23, same day as 16)
 
 Generation 16's recorded residue, paid the same day: all eleven full-grid species gain
